@@ -412,12 +412,4 @@ public class SimpleJsonWriter {
 		indent("}", writer, level-1);
 		
 	}
-	{
-		// TODO Auto-generated method stub
-		
-		
-		
-		
-		
-	}
 }
