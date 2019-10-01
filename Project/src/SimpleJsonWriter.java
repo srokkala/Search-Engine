@@ -379,13 +379,28 @@ public class SimpleJsonWriter {
 		System.out.println(asArray(elements));
 	}
 	
-    //	BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-
+	
+	/**
+	 * Writes the elements as a pretty JSON object to file.
+	 *
+	 * @param newindex the elements to write
+	 * @param path the file path to use
+	 * @throws IOException
+	 *
+	 */
 	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex, Path path)  throws IOException{
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)){
 			asDoubleNestedObject(newindex, writer, 0);
 		}
 	}
+	
+	/**
+	 * Writes the elements as a nested pretty JSON object to file.
+	 * @param newindex the elements to write
+	 * @param writer   the writer to use
+	 * @param level    the initial indent level
+	 * @throws IOException
+	 */
 	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex,Writer writer, Integer level) throws IOException {
 		var iterator = newindex.keySet().iterator();
 		writer.write("{");
