@@ -8,24 +8,49 @@ import java.util.TreeMap;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+/**
+ * The invertedIndex class adds an element to the inverted index
+ * 
+ */
 public class InvertedIndex 
 {
-	
+	/**initializing a TreeMap in which we place our elements into*/ 
 	private TreeMap<String,TreeMap<String,ArrayList<Integer>>> newindex;
+	
+	/** The default stemmer algorithm used by this class. */
 	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
 
+	/**
+	 * New TreeMap in which we will count the words per file 
+	 */
 	TreeMap<String,Integer> numbers;
+	
+	/** 
+	 * Constructor for Inverted Index
+	 * initializing the TreeMaps we are using
+	 */
 	public InvertedIndex() {
 		newindex = new TreeMap<>();
 		numbers = new TreeMap<>();
 	}
 	
+	/**
+	 * returns TreeMap with filename and word count of each 
+	 * @return numbers
+	 */
 	public TreeMap<String, Integer> getNumbers() {
 		return numbers;
 	}
 
+	/**
+	 *  This function will add the parameter element to the inverted index
+	 * @param element
+	 * @param file
+	 * @param position
+	 */
 	public void add(String element, String file, int position)
 	{
+			
 		if(newindex.containsKey(element))
 		{
 			if(newindex.get(element).containsKey(file)) {
@@ -73,7 +98,11 @@ public class InvertedIndex
 	}
 	
 	
-	
+	/**
+	 * Created the Path, this method is used in the Driver class
+	 * @param file
+	 * @throws IOException
+	 */
 	public void addPath(Path file) throws IOException
 	{
 		Stemmer stemmer = new SnowballStemmer(DEFAULT);
@@ -104,11 +133,24 @@ public class InvertedIndex
 		
 	}
 	
+	/**
+	 * Creates the file to be outputted
+	 * @param outputFile
+	 * @throws IOException
+	 */
+	
 	public void printIndex(String outputFile) throws IOException {
 		
 		SimpleJsonWriter.asDoubleNestedObject(newindex,Path.of(outputFile));
 		
 	}
+	
+	
+	
+	/**
+	 * returns the index we created
+	 * @return
+	 */
 	public TreeMap<String, TreeMap<String, ArrayList<Integer>>> getnewindex(){
 		return newindex;
 	}

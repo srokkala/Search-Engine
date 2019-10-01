@@ -34,9 +34,7 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asArray(Collection<Integer> elements, Writer writer, int level) throws IOException {
-		// TODO MODIFY AND FILL IN AS NECESSARY TO PASS TESTS
-		// TODO USE ITERATION NOT STRING REPLACEMENT
-		//throw new UnsupportedOperationException("Not yet implemented.");
+		
 		
 	String elem = "[\n";
 	int count = 0;
@@ -114,8 +112,7 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asObject(Map<String, Integer> elements, Writer writer, int level) throws IOException {
-		// TODO MODIFY AND FILL IN AS NECESSARY TO PASS TESTS
-		// TODO USE ITERATION NOT STRING REPLACEMENT
+		
 		Iterator<String> elems = elements.keySet().iterator();
 		 writer.write("{");
 		 
@@ -183,8 +180,7 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asNestedObject(TreeMap<String, ArrayList<Integer>> elements, Writer writer, int level) throws IOException {
-		// TODO MODIFY AND FILL IN AS NECESSARY TO PASS TESTS
-		// TODO USE ITERATION NOT STRING REPLACEMENT
+		
 		Iterator<String> elems = elements.keySet().iterator();
 		 writer.write("{");
 		 
@@ -391,7 +387,6 @@ public class SimpleJsonWriter {
 		}
 	}
 	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex,Writer writer, Integer level) throws IOException {
-		// TODO Auto-generated method stub
 		var iterator = newindex.keySet().iterator();
 		writer.write("{");
 		if(iterator.hasNext()) {

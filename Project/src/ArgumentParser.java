@@ -182,7 +182,6 @@ public class ArgumentParser {
 	 *         there is no mapping for the flag
 	 */
 	public String getString(String flag) {
-		// TODO Fix getString(...) implementation
 		if(map.get(flag) != null)
 		{
 			return map.get(flag);
@@ -258,7 +257,6 @@ public class ArgumentParser {
 	 * @param args the command-line arguments to parse
 	 */
 	public static void main(String[] args) {
-		// TODO Modify main(...) as needed to debug code
 		var map = new ArgumentParser(args);
 		System.out.println(map);
 	}
