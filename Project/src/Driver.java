@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 public class Driver {
 
 	/**
-	 d
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
 	 * inverted index.
