@@ -25,6 +25,13 @@ import java.util.TreeSet;
  */
 public class SimpleJsonWriter {
 
+	// TODO Need to fix JSON writing so that it is efficient (no countres, no if blocks inside of loops)
+	// TODO See related Piazza post on asObject, then take the same approach for all the methods
+	// TODO NO STRING CONCATENATION
+	// TODO Better variable names (avoid abbreviations except in special circumstances)
+	
+	// TODO Properly format all the code before code review always (can use the build in formatter in Eclipse)
+	
 	/**
 	 * Writes the elements as a pretty JSON array.
 	 *
@@ -190,7 +197,7 @@ public class SimpleJsonWriter {
 			 writer.write("\n");
 			 quote(line.toString(), writer, level+1);
 			 writer.write(": [\n");
-			 Collection<Integer> nest = elements.get(line);
+			 Collection<Integer> nest = elements.get(line); // TODO Call asArray here
 			 Iterator<Integer> nests =  nest.iterator();
 			 if(nests.hasNext()) {
 				 Integer value = nests.next();

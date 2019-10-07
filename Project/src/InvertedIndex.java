@@ -15,7 +15,8 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 public class InvertedIndex 
 {
 	/**initializing a TreeMap in which we place our elements into*/ 
-	private TreeMap<String,TreeMap<String,ArrayList<Integer>>> newindex;
+	private TreeMap<String,TreeMap<String,ArrayList<Integer>>> newindex; // TODO refactor to "index", also use final
+	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	
 	/** The default stemmer algorithm used by this class. */
 	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
@@ -23,7 +24,7 @@ public class InvertedIndex
 	/**
 	 * New TreeMap in which we will count the words per file 
 	 */
-	TreeMap<String,Integer> numbers;
+	TreeMap<String,Integer> numbers; // TODO refactor to counts, and use your keywords (private final)
 	
 	/** 
 	 * Constructor for Inverted Index
@@ -34,6 +35,9 @@ public class InvertedIndex
 		numbers = new TreeMap<>();
 	}
 	
+	/*
+	 * TODO Breaking encapsulation. Could wrap in Collections.unmodifiableMap
+	 */
 	/**
 	 * returns TreeMap with filename and word count of each 
 	 * @return numbers
@@ -97,7 +101,10 @@ public class InvertedIndex
 		}
 	}
 	
-	
+	/*
+	 * TODO Generally data structure classes like this do not do any string or file
+	 * parsing. That goes in a different class----put it with the traversing code from Driver. 
+	 */
 	/**
 	 * Created the Path, this method is used in the Driver class
 	 * @param file
