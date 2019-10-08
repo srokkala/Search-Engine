@@ -1,11 +1,8 @@
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.stream.Stream;
+
 
 // TODO Need to address the Javadoc warnings
 
@@ -47,67 +44,46 @@ public class Driver {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		// store initial start time
 		
-		//all the index exceptions should be done here 
-		InvertedIndex test = new InvertedIndex();
-		ArgumentParser parser = new ArgumentParser(args);
 
+		InvertedIndex index = new InvertedIndex();
+		ArgumentParser parser = new ArgumentParser(args);
 		Instant start = Instant.now();
 		
+		InvertedBuilder builder = new InvertedBuilder(index);
 		
-		if(parser.hasFlag("-path") && parser.getPath("-path") != null)
+		
+		if(parser.hasFlag("-path") && parser.getString("-path") != null)
 		{
 			Path path = parser.getPath("-path");
-			// TODO A little more of this needs to move to another class.
-			try(Stream<Path> nextPath = Files.walk(path, FileVisitOption.FOLLOW_LINKS)){
-				var iterator = nextPath.iterator();
-				while(iterator.hasNext()) {
-					var path1 = iterator.next();
-					if(path1.toString().toLowerCase().endsWith(".txt") || path1.toString().toLowerCase().endsWith(".text")) {
-						test.addPath(path1);
-					}
-				}
+			try {
+				builder.build(path);
+				index.printIndex(parser.getString("-index"));
+			} catch (IOException e) {
+				System.out.println("Warning: Unable to output your inverted index as JSON");
 			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-	
-		
-		if(parser.hasFlag("-index") && parser.getString("-index") != null)
-		{
-			test.printIndex(parser.getString("-index"));
 		}
 		
 		if(parser.hasFlag("-index"))
 		{
-			SimpleJsonWriter.asDoubleNestedObject(test.getnewindex(), Path.of("index.json"));
-		}
-		
-		/* TODO
-		if (parser.hasFlag("-index"))
-		{
-			Path path = parser.getPath("-index", Path.of("index.json"));
-			
+			Path path = parser.getPath("-index",Path.of("index.json"));
 			try {
-				test.writeJson(path);
+				index.printIndex(path.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			catch (IOException e) {
-				System.out.println("Warning: Unable to output your inverted index as JSON at: " + path);
-			}			
 		}
-		*/
-		
+
 		if(parser.hasFlag("-counts"))
 		{
-			SimpleJsonWriter.asObject(test.getNumbers(),Path.of("actual/counts.json"));
+			Path path = parser.getPath("-counts",Path.of("counts.json"));
+			try {
+				SimpleJsonWriter.asObject(index.getNumbers(),Path.of("actual/counts.json"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-	
-		
-
-		System.out.println(Arrays.toString(args)); // TODO Remove
-
+		InvertedBuilder.builder(index, parser);
 		// calculate time elapsed and output
 		Duration elapsed = Duration.between(start, Instant.now());
 		double seconds = (double) elapsed.toMillis() / Duration.ofSeconds(1).toMillis();

@@ -25,7 +25,7 @@ import java.util.TreeSet;
  */
 public class SimpleJsonWriter {
 
-	// TODO Need to fix JSON writing so that it is efficient (no countres, no if blocks inside of loops)
+	// TODO Need to fix JSON writing so that it is efficient (no counters, no if blocks inside of loops)
 	// TODO See related Piazza post on asObject, then take the same approach for all the methods
 	// TODO NO STRING CONCATENATION
 	// TODO Better variable names (avoid abbreviations except in special circumstances)
