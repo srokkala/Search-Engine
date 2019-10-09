@@ -15,9 +15,6 @@ import java.util.TreeMap;
 public class InvertedIndex {
 	/** initializing a TreeMap in which we place our elements into */
 	private final TreeMap<String, TreeMap<String, ArrayList<Integer>>> index;
-	// private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
-
-	/** The default stemmer algorithm used by this class. */
 	
 
 	/**
@@ -33,17 +30,7 @@ public class InvertedIndex {
 		counts = new TreeMap<>();
 	}
 
-	/*
-	 * TODO Breaking encapsulation. Could wrap in Collections.unmodifiableMap
-	 */
-	/**
-	 * returns TreeMap with filename and word count of each
-	 * 
-	 * @return numbers
-	 */
-	public TreeMap<String, Integer> getNumbers() {
-		return counts;
-	}
+	
 
 	/**
 	 * This function will add the parameter element to the inverted index
@@ -60,11 +47,7 @@ public class InvertedIndex {
 		counts.put(file, counts.get(file) + 1);
 	}
 
-	/*
-	 * TODO Generally data structure classes like this do not do any string or file
-	 * parsing. That goes in a different class----put it with the traversing code
-	 * from Driver.
-	 */
+
 
 	/**
 	 * Creates the file to be outputted
@@ -79,14 +62,10 @@ public class InvertedIndex {
 
 	}
 
-//	/**
-//	 * returns the index we created
-//	 * 
-//	 * @return
-//	 */
-//	public TreeMap<String, TreeMap<String, ArrayList<Integer>>> getnewindex() {
-//		return index;
-//	}
+/**
+ * returns  a Map with filename and word count of each
+ * @return Map
+ */
 	public Map<String,Integer> getCount()
 	{
 		return Collections.unmodifiableMap(counts);
