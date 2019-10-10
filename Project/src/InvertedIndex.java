@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 /**
  * The invertedIndex class adds an element to the inverted index
  * 
@@ -15,7 +14,6 @@ import java.util.TreeMap;
 public class InvertedIndex {
 	/** initializing a TreeMap in which we place our elements into */
 	private final TreeMap<String, TreeMap<String, ArrayList<Integer>>> index;
-	
 
 	/**
 	 * New TreeMap in which we will count the words per file
@@ -29,8 +27,6 @@ public class InvertedIndex {
 		index = new TreeMap<>();
 		counts = new TreeMap<>();
 	}
-
-	
 
 	/**
 	 * This function will add the parameter element to the inverted index
@@ -47,8 +43,6 @@ public class InvertedIndex {
 		counts.put(file, counts.get(file) + 1);
 	}
 
-
-
 	/**
 	 * Creates the file to be outputted
 	 * 
@@ -62,12 +56,12 @@ public class InvertedIndex {
 
 	}
 
-/**
- * returns  a Map with filename and word count of each
- * @return Map
- */
-	public Map<String,Integer> getCount()
-	{
+	/**
+	 * returns a Map with filename and word count of each
+	 * 
+	 * @return Map
+	 */
+	public Map<String, Integer> getCount() {
 		return Collections.unmodifiableMap(counts);
 	}
 

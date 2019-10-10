@@ -12,7 +12,6 @@ import java.time.Instant;
  * @version Fall 2019
  */
 public class Driver {
-	
 
 	/**
 	 * Initializes the classes necessary based on the provided command-line
@@ -25,21 +24,21 @@ public class Driver {
 	public static void main(String[] args) {
 		/* Store initial start time */
 		Instant start = Instant.now();
-
 		InvertedIndex invertedIndex = new InvertedIndex();
-
 		ArgumentParser argumentParser = new ArgumentParser(args);
-
 		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
 
-		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) 
-		{
-			Path path = argumentParser.getPath("-path");
-			try {
-				builder.build(path);
-			} catch (IOException e) {
-				System.out.println("Path can not be traversed: " + path.toString());
+		try {
+			if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
+				Path path = argumentParser.getPath("-path");
+				try {
+					builder.build(path);
+				} catch (IOException e) {
+					System.out.println("Path can not be traversed: " + path.toString());
+				}
 			}
+		} catch (Exception e) {
+			System.out.println("There was an issue with Adding the Path");
 		}
 
 		if (argumentParser.hasFlag("-index")) {
@@ -51,7 +50,7 @@ public class Driver {
 			}
 		}
 
-		if(argumentParser.hasFlag("-counts")) {
+		if (argumentParser.hasFlag("-counts")) {
 			Path path = argumentParser.getPath("-counts", Path.of("counts.json"));
 			try {
 				SimpleJsonWriter.asObject(invertedIndex.getCount(), path);
@@ -60,11 +59,9 @@ public class Driver {
 			}
 		}
 
-		
-
-
 		/* Calculate time elapsed and output */
 		Duration elapsed = Duration.between(start, Instant.now());
 		double seconds = (double) elapsed.toMillis() / Duration.ofSeconds(1).toMillis();
 		System.out.printf("Elapsed: %f seconds%n", seconds);
-	}}
+	}
+}
