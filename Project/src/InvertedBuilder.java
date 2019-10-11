@@ -4,39 +4,51 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 public class InvertedBuilder {
-	
+
+	/**
+	 * The New Inverted Index we want to add our elements to
+	 */
 	private final InvertedIndex invertedIndex;
 
-	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
 	/**
-	 * @param invertedIndex Inverted Index structure that will be built.
+	 * Default SnowBall Stemmer
+	 */
+	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
+
+	/**
+	 * Constructor Method for InvertedBuilder
+	 * 
+	 * @param invertedIndex Inverted Index that will be built.
 	 */
 	public InvertedBuilder(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
 	}
 
+	/**
+	 * Directory Traversal Method
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
 	public void build(Path path) throws IOException {
-		for (Path currentPath : getTextFiles(path)) {
+		for (Path currentPath : Files.walk(path, FileVisitOption.FOLLOW_LINKS).collect(Collectors.toList())) {
 			if (isText(currentPath)) {
 				addPath(currentPath);
 			}
 		}
 	}
-	
-	
-	public static List<Path> getTextFiles(Path path) throws IOException {
-		List<Path> list = Files.walk(path, FileVisitOption.FOLLOW_LINKS).collect(Collectors.toList());
-		return list;
-	}
 
-
+	/**
+	 * 
+	 * @param path
+	 * @return a boolean, checks if file is a text file
+	 */
 	public static boolean isText(Path path) {
 		String tolowercase = path.toString().toLowerCase();
 		return ((tolowercase.endsWith(".txt") || tolowercase.endsWith(".text")) && Files.isRegularFile(path));
@@ -49,7 +61,7 @@ public class InvertedBuilder {
 	 * @param file
 	 * @throws IOException
 	 */
-	public  void addPath(Path file) throws IOException {
+	public void addPath(Path file) throws IOException {
 		Stemmer stemmer = new SnowballStemmer(DEFAULT);
 		System.out.println("this is the path " + file);
 		try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8);) {
@@ -66,10 +78,6 @@ public class InvertedBuilder {
 				line = reader.readLine();
 			}
 
-		}
-
-		catch (Exception e) {
-			System.out.println("Something went wrong");
 		}
 
 	}

@@ -13,8 +13,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Outputs several simple data structures in "pretty" JSON format where
- * newlines are used to separate elements and nested elements are indented.
+ * Outputs several simple data structures in "pretty" JSON format where newlines
+ * are used to separate elements and nested elements are indented.
  *
  * Warning: This class is not thread-safe. If multiple threads access this class
  * concurrently, access must be synchronized externally.
@@ -25,13 +25,6 @@ import java.util.TreeSet;
  */
 public class SimpleJsonWriter {
 
-	// TODO Need to fix JSON writing so that it is efficient (no counters, no if blocks inside of loops)
-	// TODO See related Piazza post on asObject, then take the same approach for all the methods
-	// TODO NO STRING CONCATENATION
-	// TODO Better variable names (avoid abbreviations except in special circumstances)
-	
-	// TODO Properly format all the code before code review always (can use the build in formatter in Eclipse)
-	
 	/**
 	 * Writes the elements as a pretty JSON array.
 	 *
@@ -41,37 +34,25 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asArray(Collection<Integer> elements, Writer writer, int level) throws IOException {
-		
-		
-	String elem = "[\n";
-	int count = 0;
-	
-	for(Integer ss : elements)
-	{
-		if(elements.size() > 1)
-		{
-			if((elements.size()-1) == count)
-			{
-				elem += "\t" + ss + "\n";
-			}
-			else 
-			{
-				elem += "\t" + ss + ",\n";
-			}
+
+		writer.write("[\n");
+		Iterator<Integer> element = elements.iterator();
+
+		if (element.hasNext()) {
+			indent(writer, level++);
+			writer.write(element.next().toString());
 		}
-		else 
-		{
-			elem += "\t" + ss + "\n";
+		while (element.hasNext()) {
+
+			writer.write(",\n");
+			indent(writer, level++);
+			writer.write(element.next().toString());
 		}
-		
-		count++;
-	}
-	
-	elem += "]";
-	writer.write(elem);
-	
-	
-		
+
+		writer.write("\n");
+		indent(writer, level);
+		writer.write("]");
+
 	}
 
 	/**
@@ -104,8 +85,7 @@ public class SimpleJsonWriter {
 			StringWriter writer = new StringWriter();
 			asArray(elements, writer, 0);
 			return writer.toString();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}
@@ -119,25 +99,25 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asObject(Map<String, Integer> elements, Writer writer, int level) throws IOException {
-		
-		Iterator<String> elems = elements.keySet().iterator();
-		 writer.write("{");
-		 
-		 if(elems.hasNext()) {
-			 
-			 String line = elems.next();
-			 writer.write("\n");
-			 quote(line.toString(), writer, level+1);
-			 writer.write(": " + elements.get(line));
-			 }
-		 while(elems.hasNext()) {
-			 String line = elems.next();
-			 writer.write(",\n");
-			 quote(line.toString(), writer, level+1);
-			 writer.write(": " + elements.get(line));
-		 }
-		 writer.write("\n");
-		 indent("}", writer, level);
+
+		Iterator<String> element = elements.keySet().iterator();
+		writer.write("{");
+
+		if (element.hasNext()) {
+
+			String line = element.next();
+			writer.write("\n");
+			quote(line.toString(), writer, level + 1);
+			writer.write(": " + elements.get(line));
+		}
+		while (element.hasNext()) {
+			String line = element.next();
+			writer.write(",\n");
+			quote(line.toString(), writer, level + 1);
+			writer.write(": " + elements.get(line));
+		}
+		writer.write("\n");
+		indent("}", writer, level);
 	}
 
 	/**
@@ -170,8 +150,7 @@ public class SimpleJsonWriter {
 			StringWriter writer = new StringWriter();
 			asObject(elements, writer, 0);
 			return writer.toString();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}
@@ -181,72 +160,35 @@ public class SimpleJsonWriter {
 	 * allows this method to be used for any type of map with any type of nested
 	 * collection of integer objects.
 	 *
-	 * @param elements the elements to write
-	 * @param writer   the writer to use
-	 * @param level    the initial indent level
+	 * @param set    the elements to write
+	 * @param writer the writer to use
+	 * @param level  the initial indent level
 	 * @throws IOException
 	 */
-	public static void asNestedObject(TreeMap<String, ArrayList<Integer>> elements, Writer writer, int level) throws IOException {
-		
-		Iterator<String> elems = elements.keySet().iterator();
-		 writer.write("{");
-		 
-		 if(elems.hasNext()) {
-			 
-			 String line = elems.next();
-			 writer.write("\n");
-			 quote(line.toString(), writer, level+1);
-			 writer.write(": [\n");
-			 Collection<Integer> nest = elements.get(line); // TODO Call asArray here
-			 Iterator<Integer> nests =  nest.iterator();
-			 if(nests.hasNext()) {
-				 Integer value = nests.next();
-				 indent(value.toString(), writer, level+2);
-				 
-			 }
-			 
-			while(nests.hasNext()) {
-				 Integer value = nests.next();
-				 writer.write(",\n");
-				 indent(value.toString(), writer, level+2);
+	public static void asNestedObject(TreeMap<String, TreeSet<Integer>> set, Writer writer, int level)
+			throws IOException {
 
-			 } 
-			writer.write("\n\t\t]");
-			 
-		 }
-		 while(elems.hasNext()) {
-			 String line = elems.next();
-			 writer.write(",\n");
-			 quote(line.toString(), writer, level+1);
-			 writer.write(": [");
-			
-			 Collection<Integer> nest = elements.get(line);
-			 Iterator<Integer> nests =  nest.iterator();
-			 if(nests.hasNext()) {
-				 Integer value = nests.next();
-				 writer.write("\n");
-				 indent(value.toString(), writer, level+2);
-				 
-			 }
-			 while(nests.hasNext()) {
-				 Integer value = nests.next();
-				 writer.write(",\n");
-				 indent(value.toString(), writer, level+2);
-			 }
-			 writer.write("\n\t\t]");
-		 }
-		 
-		 writer.write("\n");
-		 indent("}", writer, level);
-		/*
-		 * The generic notation:
-		 *
-		 *    Map<String, ? extends Collection<Integer>> elements
-		 *
-		 * May be confusing. You can mentally replace it with:
-		 *
-		 *    HashMap<String, HashSet<Integer>> elements
-		 */
+		Iterator<String> element = set.keySet().iterator();
+		writer.write("{\n");
+
+		if (element.hasNext()) {
+			String nextelement = element.next();
+			indent(writer, level++);
+			quote(nextelement, writer);
+			writer.write(": ");
+			asArray(set.get(nextelement), writer, level++);
+			while (element.hasNext()) {
+				nextelement = element.next();
+				writer.write(",\n");
+				indent(writer, level++);
+				quote(nextelement, writer);
+				writer.write(": ");
+				asArray(set.get(nextelement), writer, level++);
+			}
+		}
+
+		writer.write("\n}");
+
 	}
 
 	/**
@@ -258,7 +200,7 @@ public class SimpleJsonWriter {
 	 *
 	 * @see #asNestedObject(Map, Writer, int)
 	 */
-	public static void asNestedObject(TreeMap<String, ArrayList<Integer>> elements, Path path) throws IOException {
+	public static void asNestedObject(TreeMap<String, TreeSet<Integer>> elements, Path path) throws IOException {
 		// THIS CODE IS PROVIDED FOR YOU; DO NOT MODIFY
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asNestedObject(elements, writer, 0);
@@ -273,14 +215,13 @@ public class SimpleJsonWriter {
 	 *
 	 * @see #asNestedObject(Map, Writer, int)
 	 */
-	public static String asNestedObject(TreeMap<String, ArrayList<Integer>> elements) {
+	public static String asNestedObject(TreeMap<String, TreeSet<Integer>> elements) {
 		// THIS CODE IS PROVIDED FOR YOU; DO NOT MODIFY
 		try {
 			StringWriter writer = new StringWriter();
 			asNestedObject(elements, writer, 0);
 			return writer.toString();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}
@@ -372,7 +313,7 @@ public class SimpleJsonWriter {
 		// MODIFY AS NECESSARY TO DEBUG YOUR CODE
 
 		TreeSet<Integer> elements = new TreeSet<>();
-		
+
 		System.out.println("Empty:");
 		System.out.println(asArray(elements));
 
@@ -385,48 +326,205 @@ public class SimpleJsonWriter {
 		System.out.println("\nSimple:");
 		System.out.println(asArray(elements));
 	}
-	
-	
+
 	/**
 	 * Writes the elements as a pretty JSON object to file.
 	 *
 	 * @param newindex the elements to write
-	 * @param path the file path to use
+	 * @param path     the file path to use
 	 * @throws IOException
 	 *
 	 */
-	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex, Path path)  throws IOException{
-		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)){
+	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> newindex, Path path)
+			throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asDoubleNestedObject(newindex, writer, 0);
 		}
 	}
-	
+
 	/**
 	 * Writes the elements as a nested pretty JSON object to file.
+	 * 
 	 * @param newindex the elements to write
 	 * @param writer   the writer to use
 	 * @param level    the initial indent level
 	 * @throws IOException
 	 */
-	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex,Writer writer, Integer level) throws IOException {
+	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> newindex, Writer writer,
+			Integer level) throws IOException {
 		var iterator = newindex.keySet().iterator();
 		writer.write("{");
-		if(iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			String word = iterator.next();
 			writer.write("\n\t");
 			quote(word, writer, level);
 			writer.write(": ");
-			asNestedObject(newindex.get(word),writer,level+1);
+			asNestedObject(newindex.get(word), writer, level + 1);
 		}
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			String word = iterator.next();
 			writer.write(",\n\t");
 			quote(word, writer, level);
 			writer.write(": ");
-			asNestedObject(newindex.get(word),writer,level+1);
+			asNestedObject(newindex.get(word), writer, level + 1);
 		}
 		writer.write("\n");
-		indent("}", writer, level-1);
-		
+		indent("}", writer, level - 1);
+
 	}
+
+	/**
+	 * Overload Function for asQuery
+	 *
+	 * @param querySet
+	 * @param path
+	 * @throws IOException
+	 */
+	public static void asQuery(Map<Query, ArrayList<Output>> querySet, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			System.out.println("Here is the Query Path " + path.toString());
+			asQuery(querySet, path, writer, 0);
+		}
+	}
+
+	/**
+	 * Helper function that return the map for asQuery
+	 * 
+	 * @param queryMap
+	 * @return
+	 */
+	public static Map<Query, ArrayList<Output>> asQueryHelper(Map<Query, ArrayList<Output>> queryMap) {
+		Map<Query, ArrayList<Output>> initialMap = new TreeMap<>();
+
+		for (Query query : queryMap.keySet()) {
+			ArrayList<Output> innerTemp = new ArrayList<>();
+			innerTemp.addAll(queryMap.get(query));
+			initialMap.put(query, innerTemp);
+		}
+
+		queryMap = initialMap;
+		return queryMap;
+	}
+
+	/**
+	 * Writes Queries to a File
+	 *
+	 * @param queryMap Queries will be written to a Map
+	 * @param path     The path to write
+	 * @param writer   The writer to use.
+	 * @param level    the Initial Indent Level
+	 * @throws IOException
+	 */
+	public static void asQuery(Map<Query, ArrayList<Output>> queryMap, Path path, Writer writer, int level)
+			throws IOException {
+
+		writer.write("{\n");
+
+		// Outer Iterator for Outer if- while condition
+		var outerIterator = asQueryHelper(queryMap).keySet().iterator();
+
+		if (outerIterator.hasNext()) {
+			Query nextQuery = outerIterator.next();
+			indent(writer, level + 1);
+
+			writer.write("\"" + nextQuery.toString() + "\": [");
+
+			indent(writer, level + 1);
+
+			// Inner Iterator for Inner if-while condition
+			var innerIterator = queryMap.get(nextQuery).iterator();
+
+			if (innerIterator.hasNext()) {
+				writer.write("\n");
+				indent(writer, level + 1);
+				writer.write("\t{\n");
+				indent(writer, level + 3);
+				var nexto = innerIterator.next();
+				writer.write(nexto.placeOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.countOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.totalsOfString() + "\n");
+				indent(writer, level + 2);
+				writer.write("}");
+				indent(writer, level);
+
+				while (innerIterator.hasNext()) {
+					writer.write(",\n");
+					indent(writer, level + 2);
+					writer.write("{\n");
+					indent(writer, level + 3);
+					nexto = innerIterator.next();
+					writer.write(nexto.placeOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.countOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.totalsOfString() + "\n");
+					indent(writer, level + 2);
+
+					writer.write("}");
+					indent(writer, level);
+				}
+			}
+			writer.write("\n");
+			indent(writer, level + 1);
+			writer.write("]");
+			indent(writer, level);
+
+		}
+
+		while (outerIterator.hasNext()) {
+			Query nextQuery = outerIterator.next();
+			writer.write(",\n");
+			indent(writer, level + 1);
+			writer.write("\"" + nextQuery.toString() + "\": [");
+			indent(writer, level + 1);
+			var innerIterator = queryMap.get(nextQuery).iterator();
+
+			boolean noNext = true;
+			if (innerIterator.hasNext()) {
+				writer.write("\n");
+				noNext = false;
+				indent(writer, level + 1);
+				writer.write("\t{\n");
+				indent(writer, level + 3);
+				var nexto = innerIterator.next();
+				writer.write(nexto.placeOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.countOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.totalsOfString() + "\n");
+				indent(writer, level + 2);
+
+				writer.write("}");
+				indent(writer, level);
+
+				while (innerIterator.hasNext()) {
+					writer.write(",\n");
+					indent(writer, level + 2);
+					writer.write("{\n");
+					indent(writer, level + 3);
+					nexto = innerIterator.next();
+					writer.write(nexto.placeOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.countOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.totalsOfString() + "\n");
+					indent(writer, level + 2);
+
+					writer.write("}");
+					indent(writer, level);
+				}
+			}
+
+			if (noNext == false) {
+				indent(writer, level + 1);
+			}
+			writer.write("\n\t]");
+			indent(writer, level);
+		}
+		writer.write("\n}");
+
+	}
+
 }
