@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+/**
+* Separate Class to Help Build The Inverted Index
+*/
 public class InvertedBuilder {
 
 	/**
