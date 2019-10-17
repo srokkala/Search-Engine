@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+// TODO Fix use of blank lines in Eclipse
 
 /**
  * The invertedIndex class adds an element to the inverted index
@@ -14,6 +15,7 @@ import java.util.TreeMap;
  */
 public class InvertedIndex {
 	/** initializing a TreeMap in which we place our elements into */
+	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	private final TreeMap<String, TreeMap<String, ArrayList<Integer>>> index;
 	
 
@@ -35,7 +37,7 @@ public class InvertedIndex {
 	/**
 	 * This function will add the parameter element to the inverted index
 	 * 
-	 * @param element
+	 * @param element TODO Add descriptions
 	 * @param file
 	 * @param position
 	 */
@@ -43,6 +45,9 @@ public class InvertedIndex {
 		index.putIfAbsent(element, new TreeMap<String, ArrayList<Integer>>());
 		index.get(element).putIfAbsent(file, new ArrayList<Integer>());
 		index.get(element).get(file).add(position);
+		
+		// TODO You always add 1 even if this was a duplicate
+		// TODO Test if index.get(element).get(file).add(position) is true before adding 1
 		counts.putIfAbsent(file, 0);
 		counts.put(file, counts.get(file) + 1);
 	}
@@ -71,4 +76,20 @@ public class InvertedIndex {
 		return Collections.unmodifiableMap(counts);
 	}
 
+	/*
+	 * TODO Need more features. Need contains and get methods so you can access
+	 * safely all of the data in index.
+	 * 
+	 * Use unmodifiable methods and non-nested data for the get methods.
+	 * 
+	 * contains(String word)
+	 * contains(String word, String location)
+	 * contains(String word, String location, int position)
+	 * 
+	 * getWords() unmodifiable version of the keyset
+	 * getLocations(String word)
+	 * getPositions(String word, String location)
+	 * 
+	 * toString()
+	 */
 }
