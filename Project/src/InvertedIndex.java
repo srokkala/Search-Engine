@@ -1,13 +1,11 @@
 
 import java.io.IOException;
-
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
-
-// TODO Fix use of blank lines in Eclipse
+import java.util.TreeSet;
 
 /**
  * The invertedIndex class adds an element to the inverted index
@@ -15,9 +13,8 @@ import java.util.TreeMap;
  */
 public class InvertedIndex {
 	/** initializing a TreeMap in which we place our elements into */
-	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
-	private final TreeMap<String, TreeMap<String, ArrayList<Integer>>> index;
-	
+
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 
 	/**
 	 * New TreeMap in which we will count the words per file
@@ -32,64 +29,100 @@ public class InvertedIndex {
 		counts = new TreeMap<>();
 	}
 
-	
-
 	/**
 	 * This function will add the parameter element to the inverted index
 	 * 
-	 * @param element TODO Add descriptions
-	 * @param file
-	 * @param position
+	 * @param element  the element being added to the inverted index
+	 * @param file  the file that we add the new elements to
+	 * @param position the position it is being added at
 	 */
 	public void add(String element, String file, int position) {
-		index.putIfAbsent(element, new TreeMap<String, ArrayList<Integer>>());
-		index.get(element).putIfAbsent(file, new ArrayList<Integer>());
+		index.putIfAbsent(element, new TreeMap<String, TreeSet<Integer>>());
+		index.get(element).putIfAbsent(file, new TreeSet<Integer>());
 		index.get(element).get(file).add(position);
-		
-		// TODO You always add 1 even if this was a duplicate
-		// TODO Test if index.get(element).get(file).add(position) is true before adding 1
-		counts.putIfAbsent(file, 0);
-		counts.put(file, counts.get(file) + 1);
+		counts.putIfAbsent(file, position);
+		if (position > counts.get(file)) {
+			counts.put(file, position);
+		}
 	}
-
-
 
 	/**
 	 * Creates the file to be outputted
 	 * 
-	 * @param outputFile
+	 * @param path
 	 * @throws IOException
 	 */
 
-	public void printIndex(String outputFile) throws IOException {
+	public void printIndex(Path path) throws IOException {
 
-		SimpleJsonWriter.asDoubleNestedObject(index, Path.of(outputFile));
+		SimpleJsonWriter.asDoubleNestedObject(index, Path.of(path.toUri()));
 
 	}
 
-/**
- * returns  a Map with filename and word count of each
- * @return Map
- */
-	public Map<String,Integer> getCount()
-	{
+	/**
+	 * returns a Map with filename and word count of each
+	 * 
+	 * @return Map
+	 */
+	public Map<String, Integer> getCount() {
 		return Collections.unmodifiableMap(counts);
 	}
 
-	/*
-	 * TODO Need more features. Need contains and get methods so you can access
-	 * safely all of the data in index.
+	/**
+	 * returns a unmodifiable Set
 	 * 
-	 * Use unmodifiable methods and non-nested data for the get methods.
-	 * 
-	 * contains(String word)
-	 * contains(String word, String location)
-	 * contains(String word, String location, int position)
-	 * 
-	 * getWords() unmodifiable version of the keyset
-	 * getLocations(String word)
-	 * getPositions(String word, String location)
-	 * 
-	 * toString()
+	 * @return Set
 	 */
+	public Set<String> getWords() {
+		return Collections.unmodifiableSet(this.index.keySet());
+	}
+
+	/**
+	 * This function checks if the @param word exist in the index
+	 * 
+	 * @param word The word that is being checked for
+	 * @return boolean true or false if word is found
+	 */
+
+	public boolean hasWord(String word) {
+		return index.containsKey(word);
+
+	}
+
+	/**
+	 * This function checks if the @param word contains the @param place
+	 *
+	 * @param word  The word that is being checked for
+	 * @param place The place we are checking for
+	 * @return returns a boolean if the word exists
+	 */
+	public boolean hasWord(String word, String place) {
+		if (this.index.containsKey(word)) {
+			return this.index.get(word).containsKey(place);
+		}
+		return false;
+	}
+
+	/**
+	 * checks if the map contains the specific word, path and index.
+	 * 
+	 * @param word word we are checking
+	 * @param path path we are checking
+	 * @param position position we are checking
+	 * @return boolean if word and path at posiStion
+	 */
+	public boolean hasWord(String word, String path, int position) {
+		return hasWord(word, path) ? index.get(word).get(path).contains(position) : false;
+	}
+
+	/**
+	 * getter for set of positions
+	 * 
+	 * @param word
+	 * @param position
+	 * @return an unmodifiable set of Positions
+	 */
+	public Set<Integer> getPositions(String word, String position) {
+		return Collections.unmodifiableSet(index.get(word).get(position));
+	}
 }

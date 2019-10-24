@@ -80,6 +80,5 @@ public class TextParser {
 		System.out.printf("(%02d) split(clean(text)): %s%n", cleanThenSplit.length, Arrays.toString(cleanThenSplit));
 		System.out.printf("(%02d)       parse(text) : %s%n", afterParse.length, Arrays.toString(afterParse));
 
-		// which approach avoids empty strings?
 	}
 }
