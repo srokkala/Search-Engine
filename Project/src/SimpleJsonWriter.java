@@ -11,6 +11,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/*
+ * TODO Need to fix formatting in all of your classes---specifically use of blank
+ * lines. Choose an approach and be consistent with it. I recommend one blank line
+ * between methods, and before new blocks of code. 
+ */
+
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
  * are used to separate elements and nested elements are indented.
@@ -44,7 +50,7 @@ public class SimpleJsonWriter {
 		while (integerlist.hasNext()) {
 
 			writer.write(",\n");
-			indent(writer, level++);
+			indent(writer, level++); // TODO Have you verified this works and passes the tests?
 			writer.write(integerlist.next().toString());
 		}
 
@@ -99,6 +105,10 @@ public class SimpleJsonWriter {
 	 */
 	public static void asObject(Map<String, Integer> elements, Writer writer, int level) throws IOException {
 
+		/*
+		 * TODO Fix your iterator variable names, none of them are lists.
+		 */
+		
 		Iterator<String> elementlist = elements.keySet().iterator();
 		writer.write("{");
 
@@ -154,6 +164,10 @@ public class SimpleJsonWriter {
 		}
 	}
 
+	/*
+	 * TODO Need to go back to the more general parameters from homework, which 
+	 * worked for more than TreeMaps of TreeSets.
+	 */
 	/**
 	 * Writes the elements as a nested pretty JSON object. The generic notation used
 	 * allows this method to be used for any type of map with any type of nested
@@ -179,7 +193,7 @@ public class SimpleJsonWriter {
 			while (elementlist.hasNext()) {
 				nextelement = elementlist.next();
 				writer.write(",\n");
-				indent(writer, level++);
+				indent(writer, level++); // TODO level + 1 not level++!
 				quote(nextelement, writer);
 				writer.write(": ");
 				asArray(treeMap.get(nextelement), writer, level++);
@@ -299,6 +313,9 @@ public class SimpleJsonWriter {
 		quote(element, writer);
 	}
 
+	/*
+	 * TODO Remove main methods from homework code
+	 */
 	/**
 	 * A simple main method that demonstrates this class.
 	 *

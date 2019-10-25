@@ -51,7 +51,7 @@ public class InvertedBuilder {
 	/**
 	 * This method gets a list of all subfiles from a file
 	 * 
-	 * @param path
+	 * @param path TODO Fill in your descriptions!
 	 * @return the list of subfiles
 	 * @throws IOException
 	 */
