@@ -103,6 +103,12 @@ public class InvertedIndex {
 		return false;
 	}
 
+	/*
+	 * TODO hasWord works as a method name only for the first method.
+	 * The other ones are checking for more than just the word. I suggest
+	 * refactoring all of them to just "contains" 
+	 */
+	
 	/**
 	 * checks if the map contains the specific word, path and index.
 	 * 
@@ -123,6 +129,11 @@ public class InvertedIndex {
 	 * @return an unmodifiable set of Positions
 	 */
 	public Set<Integer> getPositions(String word, String position) {
+		// TODO What happens if get(word) is null?
 		return Collections.unmodifiableSet(index.get(word).get(position));
 	}
+	
+	// TODO Also need getLocations(String word) method
+	
+	// TODO Add a toString method
 }

@@ -2,6 +2,8 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.HashMap;
 
+// TODO Formatting! This needs to be professional-quality code!
+
 /**
  * Parses and stores command-line arguments into simple key = value pairs.
  *
