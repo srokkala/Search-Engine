@@ -2,8 +2,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.HashMap;
 
-// TODO Formatting! This needs to be professional-quality code!
-
 /**
  * Parses and stores command-line arguments into simple key = value pairs.
  *
@@ -11,18 +9,20 @@ import java.util.HashMap;
  * @author University of San Francisco
  * @version Fall 2019
  */
+
 public class ArgumentParser {
 
 	/**
 	 * Stores command-line arguments in key = value pairs.
 	 */
+
 	private final Map<String, String> map;
 
 	/**
 	 * Initializes this argument map.
 	 */
-	public ArgumentParser() 
-	{
+
+	public ArgumentParser() {
 		this.map = new HashMap<>();
 	}
 
@@ -33,6 +33,7 @@ public class ArgumentParser {
 	 *
 	 * @param args the command line arguments to parse
 	 */
+
 	public ArgumentParser(String[] args) {
 		// DO NOT MODIFY; THIS METHOD IS PROVIDED FOR YOU
 		this();
@@ -45,30 +46,23 @@ public class ArgumentParser {
 	 *
 	 * @param args the command line arguments to parse
 	 */
-	public void parse(String[] args) 
-	{
-		for(int i = 0; i < args.length; i ++)
-		{
+
+	public void parse(String[] args) {
+		for (int i = 0; i < args.length; i++) {
 			String line = args[i];
 
-				if(isFlag(line))
-				{
-					 map.put(line,null);
-					 if(i + 1 != args.length)
-					 {
-						 if(isValue(args[i+1]))
-						 {
-							 map.put(line,args[i+1]);
-						 }
-						 else
-						 {
-								 map.put(line,null);
-						 }
-					 }
+			if (isFlag(line)) {
+				map.put(line, null);
+				if (i + 1 != args.length) {
+					if (isValue(args[i + 1])) {
+						map.put(line, args[i + 1]);
+					} else {
+						map.put(line, null);
+					}
 				}
+			}
 		}
-					
-	
+
 	}
 
 	/**
@@ -81,22 +75,18 @@ public class ArgumentParser {
 	 * @see String#startsWith(String)
 	 * @see String#length()
 	 */
+
 	public static boolean isFlag(String arg) {
 
-		if((arg != null))
-		{
-			if((arg.startsWith("-") && (arg.length() > 1)))
-			{
+		if ((arg != null)) {
+			if ((arg.startsWith("-") && (arg.length() > 1))) {
 				return true;
-			}
-			else
-			{
+			} else {
 				return false;
 			}
-		} 
+		}
 
-		else 
-		{
+		else {
 			return false;
 		}
 	}
@@ -111,15 +101,12 @@ public class ArgumentParser {
 	 * @see String#startsWith(String)
 	 * @see String#length()
 	 */
-	public static boolean isValue(String arg) {		
-		if(arg != null)
-		{
-			if(arg.startsWith("-") || (arg.length() < 1))
-			{
+
+	public static boolean isValue(String arg) {
+		if (arg != null) {
+			if (arg.startsWith("-") || (arg.length() < 1)) {
 				return false;
-			}
-			else
-			{
+			} else {
 				return true;
 			}
 		}
@@ -132,9 +119,8 @@ public class ArgumentParser {
 	 *
 	 * @return number of unique flags
 	 */
-	public int numFlags() 
-	{
-		//System.out.println(map.keySet().size());
+
+	public int numFlags() {
 		return map.keySet().size();
 	}
 
@@ -144,16 +130,14 @@ public class ArgumentParser {
 	 * @param flag the flag to search for
 	 * @return {@code true} if the flag exists
 	 */
-	public boolean hasFlag(String flag) 
-	{
 
-		if(map.containsKey(flag))
-		{
+	public boolean hasFlag(String flag) {
+
+		if (map.containsKey(flag)) {
 			return true;
 		}
 
-		else 
-		{
+		else {
 			return false;
 		}
 
@@ -165,13 +149,13 @@ public class ArgumentParser {
 	 * @param flag the flag to search for
 	 * @return {@code true} if the flag is mapped to a non-null value
 	 */
+
 	public boolean hasValue(String flag) {
 
-		if(map.get(flag) == null)
-		{
+		if (map.get(flag) == null) {
 			return false;
 		}
-		
+
 		return map.containsKey(flag);
 	}
 
@@ -183,13 +167,11 @@ public class ArgumentParser {
 	 * @return the value to which the specified flag is mapped, or {@code null} if
 	 *         there is no mapping for the flag
 	 */
+
 	public String getString(String flag) {
-		if(map.get(flag) != null)
-		{
+		if (map.get(flag) != null) {
 			return map.get(flag);
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
@@ -204,6 +186,7 @@ public class ArgumentParser {
 	 * @return the value to which the specified flag is mapped, or the default value
 	 *         if there is no mapping for the flag
 	 */
+
 	public String getString(String flag, String defaultValue) {
 		// DO NOT MODIFY; THIS METHOD IS PROVIDED FOR YOU
 		String value = getString(flag);
@@ -220,11 +203,11 @@ public class ArgumentParser {
 	 *
 	 * @see Path#of(String, String...)
 	 */
+
 	public Path getPath(String flag) {
 
 		String path = map.get(flag);
-		if(path == null)
-		{
+		if (path == null) {
 			return null;
 		}
 		return Path.of(path);
@@ -240,6 +223,7 @@ public class ArgumentParser {
 	 * @return the value the specified flag is mapped as a {@link Path}, or the
 	 *         default value if there is no valid mapping for the flag
 	 */
+
 	public Path getPath(String flag, Path defaultValue) {
 		// DO NOT MODIFY; THIS METHOD IS PROVIDED FOR YOU
 		Path value = getPath(flag);
@@ -258,6 +242,7 @@ public class ArgumentParser {
 	 *
 	 * @param args the command-line arguments to parse
 	 */
+
 	public static void main(String[] args) {
 		var map = new ArgumentParser(args);
 		System.out.println(map);
