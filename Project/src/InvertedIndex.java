@@ -136,7 +136,6 @@ public class InvertedIndex {
 	 */
 
 	public List<Integer> getPositions(String word, String position) {
-		// TODO What happens if get(word) is null?
 		return Collections.unmodifiableList(index.get(word).get(position));
 	}
 
