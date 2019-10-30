@@ -5,11 +5,11 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -321,7 +321,7 @@ public class SimpleJsonWriter {
 	 *
 	 */
 
-	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> index, Path path)
+	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path)
 			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asDoubleNestedObject(index, writer, 0);
@@ -337,8 +337,8 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 
-	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, ArrayList<Integer>>> newindex,
-			Writer writer, Integer level) throws IOException {
+	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> newindex, Writer writer,
+			Integer level) throws IOException {
 		var iterator = newindex.keySet().iterator();
 		writer.write("{");
 		if (iterator.hasNext()) {

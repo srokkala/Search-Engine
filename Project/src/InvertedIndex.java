@@ -1,12 +1,10 @@
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * The invertedIndex class adds an element to the inverted index
@@ -19,7 +17,7 @@ public class InvertedIndex {
 	 * initializing a TreeMap in which we place our elements into
 	 */
 
-	private final TreeMap<String, TreeMap<String, ArrayList<Integer>>> index;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 
 	/**
 	 * New TreeMap in which we will count the words per file
@@ -45,8 +43,8 @@ public class InvertedIndex {
 	 */
 
 	public void add(String element, String file, int position) {
-		index.putIfAbsent(element, new TreeMap<String, ArrayList<Integer>>());
-		index.get(element).putIfAbsent(file, new ArrayList<Integer>());
+		index.putIfAbsent(element, new TreeMap<String, TreeSet<Integer>>());
+		index.get(element).putIfAbsent(file, new TreeSet<Integer>());
 		index.get(element).get(file).add(position);
 		counts.putIfAbsent(file, position);
 		if (position > counts.get(file)) {
@@ -94,7 +92,7 @@ public class InvertedIndex {
 	 * @return returns a boolean true or false if word is found
 	 */
 
-	public boolean hasWord(String word) {
+	public boolean contains(String word) {
 		return index.containsKey(word);
 
 	}
@@ -128,15 +126,19 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Gets an unmodifiable list of positions
+	 * Gets an unmodifiable set of positions
 	 * 
 	 * @param word     word we are checking
 	 * @param position position we are checking
 	 * @return a unmodifiable set of positions
 	 */
 
-	public List<Integer> getPositions(String word, String position) {
-		return Collections.unmodifiableList(index.get(word).get(position));
+	public Set<Integer> getPositions(String word, String position) {
+		if (contains(word, position)) {
+			return Collections.unmodifiableSet(index.get(word).get(position));
+		}
+		return Collections.emptySet();
+
 	}
 
 	/**
@@ -145,7 +147,12 @@ public class InvertedIndex {
 	 * @param word key value for locations
 	 * @return an unmodifiable set of locations
 	 */
+	
 	public Set<String> getLocations(String word) {
-		return Collections.unmodifiableSet(index.get(word).keySet());
+		if (contains(word)) {
+			return Collections.unmodifiableSet(index.get(word).keySet());
+		}
+		return Collections.emptySet();
+
 	}
 }
