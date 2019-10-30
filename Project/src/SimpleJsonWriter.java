@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -36,13 +37,19 @@ public class SimpleJsonWriter {
 
 	public static void asArray(Collection<Integer> elements, Writer writer, int level) throws IOException {
 		writer.write("[\n");
+		/*
+		 * TODO This iterator isn't an integer list. Rename to just iterator? 
+		 * (Fix here and everywhere)
+		 * 
+		 * https://github.com/usf-cs212-fall2019/project-srokkala/blob/d721333ac342839e361d8d827ea908d9d0efeb89/Project/src/SimpleJsonWriter.java#L109
+		 */
 		Iterator<Integer> integerlist = elements.iterator();
 
 		if (integerlist.hasNext()) {
 			indent(writer, level++);
 			writer.write(integerlist.next().toString());
 		}
-		while (integerlist.hasNext()) {
+		while (integerlist.hasNext()) { // TODO I would expect a blank line above this, but not below it based on your other code.
 
 			writer.write(",\n");
 			indent(writer, level + 1);
@@ -105,7 +112,7 @@ public class SimpleJsonWriter {
 		Iterator<String> items = elements.keySet().iterator();
 		writer.write("{");
 
-		if (items.hasNext()) {
+		if (items.hasNext()) { // TODO Need to decide on a strategy for using blank lines and stick to it.
 
 			String line = items.next();
 			writer.write("\n");
@@ -170,7 +177,7 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 
-	public static void asNestedObject(Map<String, ? extends Collection<Integer>> treeMap, Writer writer, int level)
+	public static void asNestedObject(Map<String, ? extends Collection<Integer>> treeMap, Writer writer, int level) // TODO Rename treeMap parameter to something more appropriate
 			throws IOException {
 		Iterator<String> elementlist = treeMap.keySet().iterator();
 		writer.write("{\n");
@@ -286,12 +293,17 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 
-	public static void quote(String element, Writer writer) throws IOException {
+	public static void quote(String element, Writer writer) throws IOException { // TODO Why a blank line above?
 		// THIS CODE IS PROVIDED FOR YOU; DO NOT MODIFY
 		writer.write('"');
 		writer.write(element);
 		writer.write('"');
 	}
+	
+	/*
+	 * TODO Do not have a blank line between the Javadoc and the method it is documenting!
+	 * Fix here and everywhere
+	 */
 
 	/**
 	 * Indents and then writes the element surrounded by {@code " "} quotation
@@ -359,4 +371,27 @@ public class SimpleJsonWriter {
 		indent("}", writer, level - 1);
 
 	}
+	
+	/* TODO
+	 
+	As suspected (I mentioned it in a previous review), your asArray implementation
+	does not work. I suspect any of the implementations using level++ do not work.
+	Are you re-running the SimpleJsonWriter unit tests? 
+	
+	You are going to need to fix these and resubmit unfortunately. Try to get them
+	fixed before the Thursday cutoff. 
+	
+	See: https://github.com/usf-cs212-fall2019/project-srokkala/blob/d721333ac342839e361d8d827ea908d9d0efeb89/Project/src/SimpleJsonWriter.java#L53
+	
+	public static void main(String[] args) {
+		ArrayList<Integer> elements = new ArrayList<>();
+		System.out.println(asArray(elements));
+		
+		elements.add(42);
+		System.out.println(asArray(elements));
+		
+		elements.add(-13);
+		System.out.println(asArray(elements));
+	}
+	*/
 }
