@@ -63,24 +63,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * returns a Map with filename and word count of each
-	 * 
-	 * @return Map
-	 */
-	public Map<String, Integer> getCount() {
-		return Collections.unmodifiableMap(counts);
-	}
-
-	/**
-	 * returns a unmodifiable Set
-	 * 
-	 * @return Set
-	 */
-	public Set<String> getWords() {
-		return Collections.unmodifiableSet(this.index.keySet());
-	}
-
-	/**
 	 * This function checks if the @param word exist in the index
 	 * 
 	 * @param word The word that is being checked for
@@ -114,8 +96,26 @@ public class InvertedIndex {
 	 * @return boolean if word and path at posiStion
 	 */
 	public boolean contains(String word, String path, int position) {
-		// TODO return contains(word, path) && index.get(word).get(path).contains(position);
-		return contains(word, path) ? index.get(word).get(path).contains(position) : false;
+		return contains(word, path) && index.get(word).get(path).contains(position);
+		
+	}
+
+	/**
+	 * returns a Map with filename and word count of each
+	 * 
+	 * @return Map
+	 */
+	public Map<String, Integer> getCount() {
+		return Collections.unmodifiableMap(counts);
+	}
+
+	/**
+	 * returns a unmodifiable Set
+	 * 
+	 * @return Set
+	 */
+	public Set<String> getWords() {
+		return Collections.unmodifiableSet(this.index.keySet());
 	}
 
 	/**
@@ -154,9 +154,4 @@ public class InvertedIndex {
 	public String toString() {
 		return index.toString();
 	}
-	
-	/*
-	 * TODO Use the Outline view in Eclipse to reorder the methods so all the
-	 * get methods are next to each other.
-	 */
 }

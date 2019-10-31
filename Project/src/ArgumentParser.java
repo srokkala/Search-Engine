@@ -47,12 +47,10 @@ public class ArgumentParser {
 			String line = args[i];
 
 			if (isFlag(line)) {
-				map.put(line, null); // TODO This happens twice... does it need to?
+				map.put(line, null);
 				if (i + 1 != args.length) {
 					if (isValue(args[i + 1])) {
 						map.put(line, args[i + 1]);
-					} else {
-						map.put(line, null);
 					}
 				}
 			}
@@ -73,18 +71,8 @@ public class ArgumentParser {
 	public static boolean isFlag(String arg) {
 
 		if ((arg != null)) {
-			/*
-			 * TODO This style if/else can be collapsed into one:
-			 * return ((arg.startsWith("-") && (arg.length() > 1)));
-			 */
-			if ((arg.startsWith("-") && (arg.length() > 1))) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		else {
+			return ((arg.startsWith("-") && (arg.length() > 1)));
+		} else {
 			return false;
 		}
 	}
@@ -100,15 +88,11 @@ public class ArgumentParser {
 	 * @see String#length()
 	 */
 	public static boolean isValue(String arg) {
-		// TODO Fix as above
-		if (arg != null) {
-			if (arg.startsWith("-") || (arg.length() < 1)) {
-				return false;
-			} else {
-				return true;
-			}
+		try {
+			return (arg.charAt(0) != '-' && arg != "");
+		} catch (Exception e) {
+			return false;
 		}
-		return false;
 
 	}
 
@@ -128,15 +112,8 @@ public class ArgumentParser {
 	 * @return {@code true} if the flag exists
 	 */
 	public boolean hasFlag(String flag) {
-		// TODO Same, fix to 1 line return
-		if (map.containsKey(flag)) {
-			return true;
-		}
 
-		else {
-			return false;
-		}
-
+		return map.containsKey(flag);
 	}
 
 	/**
@@ -225,17 +202,5 @@ public class ArgumentParser {
 	public String toString() {
 		// DO NOT MODIFY; THIS METHOD IS PROVIDED FOR YOU
 		return this.map.toString();
-	}
-
-	// TODO Remove these main methods.
-	/**
-	 * A simple main method that parses the command-line arguments provided and
-	 * prints the result to the console.
-	 *
-	 * @param args the command-line arguments to parse
-	 */
-	public static void main(String[] args) {
-		var map = new ArgumentParser(args);
-		System.out.println(map);
 	}
 }
