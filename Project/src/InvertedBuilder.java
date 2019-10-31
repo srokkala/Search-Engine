@@ -6,34 +6,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 /**
  * This class helps create a new inverted index with a given path
  * 
- * @author
- *
+ * @author CS 212 Software Development
+ * @author University of San Francisco
+ * @version Fall 2019
  */
 public class InvertedBuilder {
 
 	/**
 	 * The InvertedIndex we will fill in
 	 */
-
 	private final InvertedIndex invertedIndex;
 
 	/**
 	 * The default stemmer algorithm used by this class
 	 */
-
 	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
 
 	/**
 	 * @param invertedIndex Inverted Index structure that will be built.
 	 */
-
 	public InvertedBuilder(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
 	}
@@ -44,7 +41,6 @@ public class InvertedBuilder {
 	 * @param path The initial traversal point
 	 * @throws IOException
 	 */
-
 	public void build(Path path) throws IOException {
 		for (Path currentPath : getTextFiles(path)) {
 			if (isText(currentPath)) {
@@ -60,7 +56,6 @@ public class InvertedBuilder {
 	 * @return The list of subfiles
 	 * @throws IOException
 	 */
-
 	public static List<Path> getTextFiles(Path path) throws IOException {
 		List<Path> list = Files.walk(path, FileVisitOption.FOLLOW_LINKS).collect(Collectors.toList());
 		return list;
@@ -72,7 +67,6 @@ public class InvertedBuilder {
 	 * @param path The initial traversal point
 	 * @return Returns a boolean depending on if the path is a text file or not
 	 */
-
 	public static boolean isText(Path path) {
 		String tolowercase = path.toString().toLowerCase();
 		return ((tolowercase.endsWith(".txt") || tolowercase.endsWith(".text")) && Files.isRegularFile(path));
@@ -84,7 +78,6 @@ public class InvertedBuilder {
 	 * @param file The file added to inverted index
 	 * @throws IOException
 	 */
-
 	public void addPath(Path file) throws IOException {
 		Stemmer stemmer = new SnowballStemmer(DEFAULT);
 		try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8);) {

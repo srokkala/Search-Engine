@@ -9,26 +9,25 @@ import java.util.TreeSet;
 /**
  * The invertedIndex class adds an element to the inverted index
  * 
+ * @author CS 212 Software Development
+ * @author University of San Francisco
+ * @version Fall 2019
  */
-
 public class InvertedIndex {
 
 	/**
 	 * initializing a TreeMap in which we place our elements into
 	 */
-
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 
 	/**
 	 * New TreeMap in which we will count the words per file
 	 */
-
 	private final TreeMap<String, Integer> counts;
 
 	/**
 	 * Constructor for Inverted Index initializing the TreeMaps we are using
 	 */
-
 	public InvertedIndex() {
 		index = new TreeMap<>();
 		counts = new TreeMap<>();
@@ -41,7 +40,6 @@ public class InvertedIndex {
 	 * @param file     the file that we add the new elements to
 	 * @param position the position it is being added at
 	 */
-
 	public void add(String element, String file, int position) {
 		index.putIfAbsent(element, new TreeMap<String, TreeSet<Integer>>());
 		index.get(element).putIfAbsent(file, new TreeSet<Integer>());
@@ -58,7 +56,6 @@ public class InvertedIndex {
 	 * @param path path we are creating file to
 	 * @throws IOException
 	 */
-
 	public void printIndex(Path path) throws IOException {
 
 		SimpleJsonWriter.asDoubleNestedObject(index, Path.of(path.toUri()));
@@ -70,7 +67,6 @@ public class InvertedIndex {
 	 * 
 	 * @return Map
 	 */
-
 	public Map<String, Integer> getCount() {
 		return Collections.unmodifiableMap(counts);
 	}
@@ -80,7 +76,6 @@ public class InvertedIndex {
 	 * 
 	 * @return Set
 	 */
-
 	public Set<String> getWords() {
 		return Collections.unmodifiableSet(this.index.keySet());
 	}
@@ -91,7 +86,6 @@ public class InvertedIndex {
 	 * @param word The word that is being checked for
 	 * @return returns a boolean true or false if word is found
 	 */
-
 	public boolean contains(String word) {
 		return index.containsKey(word);
 
@@ -104,7 +98,6 @@ public class InvertedIndex {
 	 * @param place The place we are checking for
 	 * @return returns a boolean if the word exists
 	 */
-
 	public boolean contains(String word, String place) {
 		if (this.index.containsKey(word)) {
 			return this.index.get(word).containsKey(place);
@@ -120,7 +113,6 @@ public class InvertedIndex {
 	 * @param position position we are checking
 	 * @return boolean if word and path at posiStion
 	 */
-
 	public boolean contains(String word, String path, int position) {
 		return contains(word, path) ? index.get(word).get(path).contains(position) : false;
 	}
@@ -132,7 +124,6 @@ public class InvertedIndex {
 	 * @param position position we are checking
 	 * @return a unmodifiable set of positions
 	 */
-
 	public Set<Integer> getPositions(String word, String position) {
 		if (contains(word, position)) {
 			return Collections.unmodifiableSet(index.get(word).get(position));
@@ -147,12 +138,19 @@ public class InvertedIndex {
 	 * @param word key value for locations
 	 * @return an unmodifiable set of locations
 	 */
-	
 	public Set<String> getLocations(String word) {
 		if (contains(word)) {
 			return Collections.unmodifiableSet(index.get(word).keySet());
 		}
 		return Collections.emptySet();
 
+	}
+
+	/**
+	 * Prints the inverted index
+	 */
+	@Override
+	public String toString() {
+		return index.toString();
 	}
 }
