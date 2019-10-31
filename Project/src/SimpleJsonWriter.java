@@ -33,29 +33,19 @@ public class SimpleJsonWriter {
 	 * @throws IOException
 	 */
 	public static void asArray(Collection<Integer> element, Writer writer, int level) throws IOException {
-		writer.write('[' + "\n");
-
-		/*
-		 * TODO Why isn't this updated to use the better approach? The iterator approach
-		 * doesn't need an if statement inside a for loop.
-		 */
-		
-		if (!element.isEmpty()) {
-			int size = element.size();
-			int count = 0;
-			for (Integer elements : element) {
-				count++;
-				if (count != size) {
-					indent(writer, level + 1);
-					writer.write(elements.toString() + ',' + "\n");
-				} else {
-					indent(writer, level + 1);
-					writer.write(elements.toString() + "\n");
-				}
-			}
+		Iterator<Integer> iterator = element.iterator();
+		writer.write("[");
+		if (iterator.hasNext()) {
+			writer.write("\n");
+			indent(iterator.next().toString(), writer, level + 1);
 		}
-		indent(writer, level);
-		writer.write(']');
+		while (iterator.hasNext()) {
+
+			writer.write(",\n");
+			indent(iterator.next().toString(), writer, level + 1);
+		}
+		writer.write("\n");
+		indent("]", writer, level);
 	}
 
 	/**
@@ -110,13 +100,13 @@ public class SimpleJsonWriter {
 			writer.write("\n");
 			quote(line.toString(), writer, level + 1);
 			writer.write(": " + elements.get(line));
-		}
 
-		while (items.hasNext()) {
-			String line = items.next();
-			writer.write(",\n");
-			quote(line.toString(), writer, level + 1);
-			writer.write(": " + elements.get(line));
+			while (items.hasNext()) {
+				line = items.next();
+				writer.write(",\n");
+				quote(line.toString(), writer, level + 1);
+				writer.write(": " + elements.get(line));
+			}
 		}
 		writer.write("\n");
 		indent("}", writer, level);
@@ -178,15 +168,17 @@ public class SimpleJsonWriter {
 			quote(nextelement, writer);
 			writer.write(": ");
 			asArray(elements.get(nextelement), writer, level + 1);
-			while (iterator.hasNext()) { // TODO Why switch approach for this one? The others are slightly different.
-				nextelement = iterator.next();
-				writer.write(",\n");
-				indent(writer, level + 1);
-				quote(nextelement, writer);
-				writer.write(": ");
-				asArray(elements.get(nextelement), writer, level + 1);
-			}
 		}
+
+		while (iterator.hasNext()) {
+			String nextelement = iterator.next();
+			writer.write(",\n");
+			indent(writer, level + 1);
+			quote(nextelement, writer);
+			writer.write(": ");
+			asArray(elements.get(nextelement), writer, level + 1);
+		}
+
 		writer.write("\n}");
 	}
 
@@ -334,14 +326,14 @@ public class SimpleJsonWriter {
 			quote(word, writer, level);
 			writer.write(": ");
 			asNestedObject(newindex.get(word), writer, level + 1);
-		}
 
-		while (iterator.hasNext()) {
-			String word = iterator.next();
-			writer.write(",\n\t");
-			quote(word, writer, level);
-			writer.write(": ");
-			asNestedObject(newindex.get(word), writer, level + 1);
+			while (iterator.hasNext()) {
+				word = iterator.next();
+				writer.write(",\n\t");
+				quote(word, writer, level);
+				writer.write(": ");
+				asNestedObject(newindex.get(word), writer, level + 1);
+			}
 		}
 		writer.write("\n");
 		indent("}", writer, level - 1);
