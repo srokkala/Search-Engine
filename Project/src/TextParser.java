@@ -54,6 +54,7 @@ public class TextParser {
 		return split(clean(text));
 	}
 
+	// TODO Go ahead and remove the unused main methods from these classes
 	/**
 	 * A simple main method that demonstrates this class.
 	 *

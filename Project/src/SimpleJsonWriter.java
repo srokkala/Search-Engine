@@ -35,6 +35,11 @@ public class SimpleJsonWriter {
 	public static void asArray(Collection<Integer> element, Writer writer, int level) throws IOException {
 		writer.write('[' + "\n");
 
+		/*
+		 * TODO Why isn't this updated to use the better approach? The iterator approach
+		 * doesn't need an if statement inside a for loop.
+		 */
+		
 		if (!element.isEmpty()) {
 			int size = element.size();
 			int count = 0;
@@ -173,7 +178,7 @@ public class SimpleJsonWriter {
 			quote(nextelement, writer);
 			writer.write(": ");
 			asArray(elements.get(nextelement), writer, level + 1);
-			while (iterator.hasNext()) {
+			while (iterator.hasNext()) { // TODO Why switch approach for this one? The others are slightly different.
 				nextelement = iterator.next();
 				writer.write(",\n");
 				indent(writer, level + 1);

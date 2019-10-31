@@ -114,6 +114,7 @@ public class InvertedIndex {
 	 * @return boolean if word and path at posiStion
 	 */
 	public boolean contains(String word, String path, int position) {
+		// TODO return contains(word, path) && index.get(word).get(path).contains(position);
 		return contains(word, path) ? index.get(word).get(path).contains(position) : false;
 	}
 
@@ -153,4 +154,9 @@ public class InvertedIndex {
 	public String toString() {
 		return index.toString();
 	}
+	
+	/*
+	 * TODO Use the Outline view in Eclipse to reorder the methods so all the
+	 * get methods are next to each other.
+	 */
 }
