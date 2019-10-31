@@ -11,6 +11,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/*
+ * TODO Sometimes you have two separate if/while blocks, and sometimes you nest
+ * the while loop inside the if block. Both are okay, but choose one and use it
+ * everywhere for consistency. 
+ */
+
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
  * are used to separate elements and nested elements are indented.
