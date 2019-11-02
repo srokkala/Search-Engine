@@ -106,13 +106,13 @@ public class SimpleJsonWriter {
 			writer.write("\n");
 			quote(line.toString(), writer, level + 1);
 			writer.write(": " + elements.get(line));
+		}
 
-			while (items.hasNext()) {
-				line = items.next();
-				writer.write(",\n");
-				quote(line.toString(), writer, level + 1);
-				writer.write(": " + elements.get(line));
-			}
+		while (items.hasNext()) {
+			String line = items.next();
+			writer.write(",\n");
+			quote(line.toString(), writer, level + 1);
+			writer.write(": " + elements.get(line));
 		}
 		writer.write("\n");
 		indent("}", writer, level);
@@ -332,14 +332,14 @@ public class SimpleJsonWriter {
 			quote(word, writer, level);
 			writer.write(": ");
 			asNestedObject(newindex.get(word), writer, level + 1);
-
+		}
+		
 			while (iterator.hasNext()) {
-				word = iterator.next();
+				String word = iterator.next();
 				writer.write(",\n\t");
 				quote(word, writer, level);
 				writer.write(": ");
 				asNestedObject(newindex.get(word), writer, level + 1);
-			}
 		}
 		writer.write("\n");
 		indent("}", writer, level - 1);
