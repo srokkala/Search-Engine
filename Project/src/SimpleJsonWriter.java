@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.ArrayList;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -339,4 +340,158 @@ public class SimpleJsonWriter {
 		indent("}", writer, level - 1);
 
 	}
+
+	/**
+	 * Overload Function for asQuery
+	 *
+	 * @param querySet
+	 * @param path
+	 * @throws IOException
+	 */
+	public static void asQuery(Map<String, ArrayList<Output>> querySet, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			asQuery(querySet, path, writer, 0);
+		}
+	}
+
+	/**
+	 * Helper function that return the map for asQuery
+	 * 
+	 * @param queryMap
+	 * @return Map
+	 */
+	public static Map<String, ArrayList<Output>> asQueryHelper(Map<String, ArrayList<Output>> queryMap) {
+		Map<String, ArrayList<Output>> initialMap = new TreeMap<>();
+
+		for (String query : queryMap.keySet()) {
+			ArrayList<Output> innerTemp = new ArrayList<>();
+			innerTemp.addAll(queryMap.get(query));
+			initialMap.put(query, innerTemp);
+		}
+
+		queryMap = initialMap;
+		return queryMap;
+	}
+
+	/**
+	 * Writes Queries to a File
+	 *
+	 * @param queryMap Queries will be written to a Map
+	 * @param path     The path to write
+	 * @param writer   The writer to use.
+	 * @param level    the Initial Indent Level
+	 * @throws IOException
+	 */
+	public static void asQuery(Map<String, ArrayList<Output>> queryMap, Path path, Writer writer, int level)
+			throws IOException {
+
+		writer.write("{\n");
+
+		// Outer Iterator for Outer if- while condition
+		var outerIterator = asQueryHelper(queryMap).keySet().iterator();
+
+		if (outerIterator.hasNext()) {
+			String nextQuery = outerIterator.next();
+			indent(writer, level + 1);
+
+			writer.write("\"" + nextQuery.toString() + "\": [");
+
+			indent(writer, level + 1);
+
+			// Inner Iterator for Inner if-while condition
+			var innerIterator = queryMap.get(nextQuery).iterator();
+
+			if (innerIterator.hasNext()) {
+				writer.write("\n");
+				indent(writer, level + 1);
+				writer.write("\t{\n");
+				indent(writer, level + 3);
+				var nexto = innerIterator.next();
+				writer.write(nexto.placeOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.countOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.totalsOfString() + "\n");
+				indent(writer, level + 2);
+				writer.write("}");
+				indent(writer, level);
+
+				while (innerIterator.hasNext()) {
+					writer.write(",\n");
+					indent(writer, level + 2);
+					writer.write("{\n");
+					indent(writer, level + 3);
+					nexto = innerIterator.next();
+					writer.write(nexto.placeOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.countOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.totalsOfString() + "\n");
+					indent(writer, level + 2);
+
+					writer.write("}");
+					indent(writer, level);
+				}
+			}
+			writer.write("\n");
+			indent(writer, level + 1);
+			writer.write("]");
+			indent(writer, level);
+
+		}
+
+		while (outerIterator.hasNext()) {
+			String nextQuery = outerIterator.next();
+			writer.write(",\n");
+			indent(writer, level + 1);
+			writer.write("\"" + nextQuery.toString() + "\": [");
+			indent(writer, level + 1);
+			var innerIterator = queryMap.get(nextQuery).iterator();
+
+			boolean noNext = true;
+			if (innerIterator.hasNext()) {
+				writer.write("\n");
+				noNext = false;
+				indent(writer, level + 1);
+				writer.write("\t{\n");
+				indent(writer, level + 3);
+				var nexto = innerIterator.next();
+				writer.write(nexto.placeOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.countOfString() + "\n");
+				indent(writer, level + 3);
+				writer.write(nexto.totalsOfString() + "\n");
+				indent(writer, level + 2);
+
+				writer.write("}");
+				indent(writer, level);
+
+				while (innerIterator.hasNext()) {
+					writer.write(",\n");
+					indent(writer, level + 2);
+					writer.write("{\n");
+					indent(writer, level + 3);
+					nexto = innerIterator.next();
+					writer.write(nexto.placeOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.countOfString() + "\n");
+					indent(writer, level + 3);
+					writer.write(nexto.totalsOfString() + "\n");
+					indent(writer, level + 2);
+
+					writer.write("}");
+					indent(writer, level);
+				}
+			}
+
+			if (noNext == false) {
+				indent(writer, level + 1);
+			}
+			writer.write("\n\t]");
+			indent(writer, level);
+		}
+		writer.write("\n}");
+
+	}
+
 }

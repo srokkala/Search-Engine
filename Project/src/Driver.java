@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -55,6 +56,45 @@ public class Driver {
 			} catch (IOException e) {
 				System.out.println("There was an issue while writing counts info to file: " + path.toString());
 			}
+		}
+
+		if (argumentParser.hasFlag("-results")) {
+			try {
+				SimpleJsonWriter.asQuery(Collections.emptyMap(), Path.of("results.json"));
+			} catch (Exception e) {
+				System.out.println("There was an issue while writing");
+			}
+		}
+
+		if (argumentParser.hasFlag("-query") && argumentParser.getPath("-query") != null) {
+			Path queryPath = argumentParser.getPath("-query");
+			try {
+				QueryMaker querymaker = new QueryMaker(invertedIndex, queryPath);
+				querymaker.queryGenerator();
+
+				if (argumentParser.hasFlag("-exact")) {
+					querymaker.exactSearch();
+				} else {
+					querymaker.querySearch();
+				}
+
+				if (argumentParser.hasFlag("-results")) {
+					Path path = argumentParser.getPath("-results");
+
+					if (path == null) {
+						path = Path.of("results.json");
+					}
+
+					SimpleJsonWriter.asQuery(querymaker.getQuery(), path);
+
+				}
+
+			} catch (IOException e) {
+				System.out.println("There was an issue while reading");
+			} catch (Exception ee) {
+				System.out.println("There was an issue while changing the file ");
+			}
+
 		}
 
 		/* Calculate time elapsed and output */

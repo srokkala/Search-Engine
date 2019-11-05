@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.ArrayList;
 
 /**
  * The invertedIndex class adds an element to the inverted index
@@ -48,6 +49,72 @@ public class InvertedIndex {
 		if (position > counts.get(file)) {
 			counts.put(file, position);
 		}
+	}
+
+	/**
+	 *
+	 * @param word
+	 * @return returns an ArrayList of indexes where this param word was found
+	 */
+	public ArrayList<Output> invertedOutput(String word) {
+		ArrayList<Output> indexes = new ArrayList<>();
+		if (this.index.containsKey(word)) {
+			var keys = this.index.get(word).keySet();
+			for (String results : keys) {
+				Output result = new Output();
+				result.setPlace(results);
+				result.setNumber(this.index.get(word).get(results).size());
+				result.setTotals((double) result.getNumber() / counts.get(results));
+				indexes.add(result);
+			}
+		}
+		return indexes;
+	}
+
+	/**
+	 * Merges Duplicates based on @param ArrayList
+	 * 
+	 * @param initial
+	 * @return an ArrayList of Results.
+	 */
+	public static ArrayList<Output> mergeDuplicates(ArrayList<Output> initial) {
+		ArrayList<Output> merged = new ArrayList<>();
+		for (Output result : initial) {
+			boolean merge = false;
+			for (Output mergedOutput : merged) {
+				if (mergedOutput.samePlace(result)) {
+					mergedOutput.setNumber(mergedOutput.getNumber() + result.getNumber());
+					mergedOutput.setTotals(mergedOutput.getTotals() + result.getTotals());
+					merge = true;
+				}
+			}
+			if (!merge) {
+				merged.add(result);
+			}
+		}
+		return merged;
+	}
+
+	/**
+	 * Returns an arrayList of outputs based on the parameter query
+	 *
+	 * @param query the query we are working on
+	 * @return An ArrayList of outputs based on the @param query
+	 */
+	public ArrayList<Output> getOutput(String query) {
+		ArrayList<Output> output = new ArrayList<>();
+
+		// Get words from query and place them into a string
+		for (String words : query.split(" ")) {
+			ArrayList<Output> array = invertedOutput(words);
+			for (Output querys : array) {
+				output.add(querys);
+			}
+		}
+		// use helper function to merge duplicates
+		output = mergeDuplicates(output);
+		Collections.sort(output);
+		return output;
 	}
 
 	/**
@@ -97,7 +164,7 @@ public class InvertedIndex {
 	 */
 	public boolean contains(String word, String path, int position) {
 		return contains(word, path) && index.get(word).get(path).contains(position);
-		
+
 	}
 
 	/**
