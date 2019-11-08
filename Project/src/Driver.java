@@ -12,39 +12,59 @@ import java.time.Instant;
  * @version Fall 2019
  */
 public class Driver {
-
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
 	 * inverted index.
 	 *
 	 * @param args flag/value pairs used to start this program
+	 * @throws IOException
 	 *
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		/* Store initial start time */
+
+		// initial thread count
+		int threads = 1;
+
 		Instant start = Instant.now();
-		InvertedIndex invertedIndex = new InvertedIndex();
+
 		ArgumentParser argumentParser = new ArgumentParser(args);
+
+		InvertedIndex invertedIndex = new InvertedIndex();
+
 		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
 
-		try {
-			if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
-				Path path = argumentParser.getPath("-path");
-				try {
-					builder.build(path);
-				} catch (IOException e) {
-					System.out.println("Path can not be traversed: " + path.toString());
+		QueryMaker maker = new QueryMaker(invertedIndex);
+
+		if (argumentParser.hasFlag("-threads")) {
+			try {
+				threads = Integer.parseInt(argumentParser.getString("-threads"));
+				if (threads == 0) {
+					threads = 5;
 				}
+			} catch (Exception e) {
+				System.out.println("Setting Thread Count to 5");
+				threads = 5;
 			}
-		} catch (Exception e) {
-			System.out.println("There was an issue with Adding the Path");
+			invertedIndex = new MultithreadedInvertedIndex();
+			builder = new MultithreadedInvertedBuilder((MultithreadedInvertedIndex) invertedIndex);
+			maker = new MultithreadedQueryMaker((MultithreadedInvertedIndex) invertedIndex);
+		}
+
+		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
+			Path path = argumentParser.getPath("-path");
+			try {
+				builder.build(path, threads);
+			} catch (IOException e) {
+				System.out.println("Path can not be traversed: " + path.toString());
+			}
 		}
 
 		if (argumentParser.hasFlag("-index")) {
 			Path path = argumentParser.getPath("-index", Path.of("index.json"));
 			try {
-				invertedIndex.printIndex(path.toString());
+				invertedIndex.printIndex(path);
 			} catch (IOException e) {
 				System.out.println("There was an issue while writing inverted index to file: " + path.toString());
 			}
@@ -57,6 +77,27 @@ public class Driver {
 			} catch (IOException e) {
 				System.out.println("There was an issue while writing counts info to file: " + path.toString());
 			}
+		}
+
+		if (argumentParser.hasFlag("-query") && argumentParser.getPath("-query") != null) {
+			Path queryPath = argumentParser.getPath("-query");
+			try {
+				maker.queryParser(queryPath, threads, argumentParser.hasFlag("-exact"));
+			} catch (IOException e) {
+				System.out.println("There was an issue while reading the query file: " + queryPath.toString());
+			} catch (Exception r) {
+				System.out.println("There was an issue while doing things with file: " + queryPath.toString());
+			}
+		}
+
+		if (argumentParser.hasFlag("-results")) {
+			Path path = argumentParser.getPath("-results", Path.of("results.json"));
+			try {
+				SimpleJsonWriter.asQuery(maker.queryMap, path);
+			} catch (IOException e) {
+				System.out.println("Something went wrong while writing search results to path: " + path);
+			}
+
 		}
 
 		/* Calculate time elapsed and output */
