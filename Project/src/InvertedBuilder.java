@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
+
 /**
  * This class helps create a new inverted index with a given path
  * 
