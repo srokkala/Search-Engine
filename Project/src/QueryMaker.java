@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 
+ * TODO
  * 
  * @author CS 212 Software Development
  * @author University of San Francisco
@@ -27,12 +27,12 @@ public class QueryMaker {
 	/**
 	 * A map for all the clean queries
 	 */
-	private TreeMap<String, ArrayList<Output>> queryMap;
+	private TreeMap<String, ArrayList<Output>> queryMap; // TODO final
 
 	/**
 	 * The path to the file containing the queries printed out in the console
 	 */
-	private final Path queryPath;
+	private final Path queryPath; // TODO Remove
 
 	/**
 	 * Constructor method for QueryMaker
@@ -47,6 +47,23 @@ public class QueryMaker {
 		this.queryPath = queryPath;
 	}
 
+	/*
+	 * TODO But cannot safely return, even wrapped in unmodifiable, nested data structures.
+	 * Remove or replace with a safer get method.
+
+	public void parseQueries(Path queryPath, boolean exact) {
+		for each line in file
+			call parseQueries(line, exact)
+	}
+
+	public void parseQueries(String queryLine, boolean exact) {
+		TreeSet<String> queries = TextFileStemmer.uniqueStems(query);
+		String append = String.join(" ", queries);
+		if (queries.size() != 0 && !this.queryMap.containsKey(append)) {
+			this.queryMap.put(append, index.search(queries, exact));
+		}
+	}
+	 */
 	/**
 	 * Getter for the queryMap
 	 *

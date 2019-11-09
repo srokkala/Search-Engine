@@ -1,3 +1,11 @@
+/*
+ * TODO
+ * Since all of the data stored here is based on a specific inverted index, this 
+ * works well as a public non-static inner class inside of InvertedIndex.
+ * 
+ * 
+ */
+
 
 /**
  * The class that keeps track of the output of a search
@@ -6,12 +14,12 @@
  * @author University of San Francisco
  * @version Fall 2019
  */
-public class Output implements Comparable<Output> {
+public class Output implements Comparable<Output> { // TODO Refactor name to Result or SearchResult
 
 	/**
 	 * This will hold the location of the search result.
 	 */
-	private String place;
+	private String place; // TODO final
 	/**
 	 * This will hold the count of matches.
 	 */
@@ -25,7 +33,7 @@ public class Output implements Comparable<Output> {
 	 * Constructor for Output class.
 	 *
 	 */
-	public Output() {
+	public Output() { // TODO public Output(String place)
 		this.place = "";
 		this.number = 0;
 		this.totals = 0;
@@ -36,9 +44,18 @@ public class Output implements Comparable<Output> {
 	 *
 	 * @param place
 	 */
-	public void setPlace(String place) {
+	public void setPlace(String place) { // TODO Remove
 		this.place = place;
 	}
+	
+	/*
+	 * TODO Remove all of the set methods... replace with instead...
+	 * 
+	private update(String word) {
+		this.number += index.get(word).get(place).size();
+		this.totals = (double) this.number / counts.get(place);
+	}
+	 */
 
 	/**
 	 * Sets the Number variable
