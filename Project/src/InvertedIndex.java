@@ -81,7 +81,7 @@ public class InvertedIndex {
 		ArrayList<Output> merged = new ArrayList<>();
 		for (Output result : initial) {
 			boolean merge = false;
-			for (Output mergedOutput : merged) {
+			for (Output mergedOutput : merged) { // TODO Linear search
 				if (mergedOutput.samePlace(result)) {
 					mergedOutput.setNumber(mergedOutput.getNumber() + result.getNumber());
 					mergedOutput.setTotals(mergedOutput.getTotals() + result.getTotals());
@@ -116,6 +116,39 @@ public class InvertedIndex {
 		Collections.sort(output);
 		return output;
 	}
+	
+	/* TODO
+	public ArrayList<Output> search(Collection<String> queries, boolean exact) {
+		return exact ? exactSearch(queries) : partialSearch(queries);
+	}
+	
+	public ArrayList<Output> exactSearch(Collection<String> queries) {
+		
+	}
+	
+	public ArrayList<Output> partialSearch(Collection<String> queries) {
+		ArrayList<Output> results = 
+		Map<String (place), Output> lookup = 
+		
+		for each query in queries:
+			for each word in inverted index keyset
+				if the word starts with our query
+					for each location of that word in our index
+						if (lookup.containsKey(location) {
+							lookup.get(location).update(word)
+						}
+						else {
+							Output result = new Output(location);
+							result.update(word);
+							
+							results.add(result);
+							lookup.put(location, result);
+						}
+		
+		Collections.sort(results);
+		return results;
+	}
+	*/
 
 	/**
 	 * Creates the file to be outputted
