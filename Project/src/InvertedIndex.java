@@ -1,11 +1,13 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The invertedIndex class adds an element to the inverted index
@@ -40,115 +42,21 @@ public class InvertedIndex {
 	 * @param element  the element being added to the inverted index
 	 * @param file     the file that we add the new elements to
 	 * @param position the position it is being added at
+	 * @return boolean if the element was added or not
 	 */
-	public void add(String element, String file, int position) {
-		index.putIfAbsent(element, new TreeMap<String, TreeSet<Integer>>());
-		index.get(element).putIfAbsent(file, new TreeSet<Integer>());
-		index.get(element).get(file).add(position);
+	public boolean add(String element, String file, int position) {
+		boolean inserted;
+		index.putIfAbsent(element, new TreeMap<>());
+		index.get(element).putIfAbsent(file, new TreeSet<>());
+		inserted = index.get(element).get(file).add(position);
 		counts.putIfAbsent(file, position);
+
 		if (position > counts.get(file)) {
 			counts.put(file, position);
 		}
-	}
 
-	/**
-	 *
-	 * @param word
-	 * @return returns an ArrayList of indexes where this param word was found
-	 */
-	public ArrayList<Output> invertedOutput(String word) {
-		ArrayList<Output> indexes = new ArrayList<>();
-		if (this.index.containsKey(word)) {
-			var keys = this.index.get(word).keySet();
-			for (String results : keys) {
-				Output result = new Output();
-				result.setPlace(results);
-				result.setNumber(this.index.get(word).get(results).size());
-				result.setTotals((double) result.getNumber() / counts.get(results));
-				indexes.add(result);
-			}
-		}
-		return indexes;
+		return inserted;
 	}
-
-	/**
-	 * Merges Duplicates based on @param ArrayList
-	 * 
-	 * @param initial
-	 * @return an ArrayList of Results.
-	 */
-	public static ArrayList<Output> mergeDuplicates(ArrayList<Output> initial) {
-		ArrayList<Output> merged = new ArrayList<>();
-		for (Output result : initial) {
-			boolean merge = false;
-			for (Output mergedOutput : merged) { // TODO Linear search
-				if (mergedOutput.samePlace(result)) {
-					mergedOutput.setNumber(mergedOutput.getNumber() + result.getNumber());
-					mergedOutput.setTotals(mergedOutput.getTotals() + result.getTotals());
-					merge = true;
-				}
-			}
-			if (!merge) {
-				merged.add(result);
-			}
-		}
-		return merged;
-	}
-
-	/**
-	 * Returns an arrayList of outputs based on the parameter query
-	 *
-	 * @param query the query we are working on
-	 * @return An ArrayList of outputs based on the @param query
-	 */
-	public ArrayList<Output> getOutput(String query) {
-		ArrayList<Output> output = new ArrayList<>();
-
-		// Get words from query and place them into a string
-		for (String words : query.split(" ")) {
-			ArrayList<Output> array = invertedOutput(words);
-			for (Output querys : array) {
-				output.add(querys);
-			}
-		}
-		// use helper function to merge duplicates
-		output = mergeDuplicates(output);
-		Collections.sort(output);
-		return output;
-	}
-	
-	/* TODO
-	public ArrayList<Output> search(Collection<String> queries, boolean exact) {
-		return exact ? exactSearch(queries) : partialSearch(queries);
-	}
-	
-	public ArrayList<Output> exactSearch(Collection<String> queries) {
-		
-	}
-	
-	public ArrayList<Output> partialSearch(Collection<String> queries) {
-		ArrayList<Output> results = 
-		Map<String (place), Output> lookup = 
-		
-		for each query in queries:
-			for each word in inverted index keyset
-				if the word starts with our query
-					for each location of that word in our index
-						if (lookup.containsKey(location) {
-							lookup.get(location).update(word)
-						}
-						else {
-							Output result = new Output(location);
-							result.update(word);
-							
-							results.add(result);
-							lookup.put(location, result);
-						}
-		
-		Collections.sort(results);
-		return results;
-	}
-	*/
 
 	/**
 	 * Creates the file to be outputted
@@ -181,9 +89,11 @@ public class InvertedIndex {
 	 * @return returns a boolean if the word exists
 	 */
 	public boolean contains(String word, String place) {
+
 		if (this.index.containsKey(word)) {
 			return this.index.get(word).containsKey(place);
 		}
+
 		return false;
 	}
 
@@ -201,21 +111,118 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * A helper method called by the two search methods.
+	 *
+	 * @param outputs An arraylist of outputs we add to in this function
+	 * @param search  The map that updates the count
+	 * @param word    The word we are searching for
+	 */
+	private void searchHelper(ArrayList<SearchResult> outputs, Map<String, SearchResult> search, String word) {
+		for (String location : this.index.get(word).keySet()) {
+			if (search.containsKey(location)) {
+				search.get(location).updateCount(word);
+			} else {
+				SearchResult output = new SearchResult(location);
+				output.addCount(this.index.get(word).get(location).size());
+				search.put(location, output);
+				outputs.add(output);
+			}
+		}
+	}
+
+	/**
+	 * This functions checks for an exact match with input query
+	 *
+	 * @param queries The queries used to check for a match
+	 * @return an arraylist of outputs given the input query
+	 */
+	public ArrayList<SearchResult> queryMatchChecker(Collection<String> queries) {
+		ArrayList<SearchResult> output = new ArrayList<>();
+		HashMap<String, SearchResult> search = new HashMap<>();
+
+		for (String queryKey : queries) {
+			if (index.containsKey(queryKey)) {
+				searchHelper(output, search, queryKey);
+			}
+		}
+
+		Collections.sort(output);
+		return output;
+	}
+
+	/**
+	 * This functions checks for an partial match with input query
+	 *
+	 * @param queries The queries used to check for a partial match
+	 * @return an arraylist of outputs given the input query
+	 */
+	public ArrayList<SearchResult> partialQueryMatchChecker(Collection<String> queries) {
+		ArrayList<SearchResult> outputs = new ArrayList<>();
+		HashMap<String, SearchResult> search = new HashMap<>();
+
+		for (String query : queries) {
+			for (String word : this.index.tailMap(query).keySet()) {
+				if (word.startsWith(query)) {
+					searchHelper(outputs, search, word);
+				} else {
+					break;
+				}
+			}
+		}
+
+		Collections.sort(outputs);
+		return outputs;
+	}
+
+	/**
+	 * If the @param match is true we are return the output from matcher checker,
+	 * otherwise we return output from the partial match checker
+	 *
+	 * @param queries The queries we pass through the conditional
+	 * @param match   A boolean that cause the conditional to point to the right
+	 *                function to execute
+	 * @return an arraylist of outputs depending on the function called
+	 */
+	public ArrayList<SearchResult> searchChooser(Collection<String> queries, boolean match) {
+		if (match == true) {
+			return queryMatchChecker(queries);
+		} else {
+			return partialQueryMatchChecker(queries);
+		}
+	}
+
+	/**
 	 * returns a Map with filename and word count of each
 	 * 
-	 * @return Map
+	 * @return Map of unmodifiable counts
 	 */
 	public Map<String, Integer> getCount() {
 		return Collections.unmodifiableMap(counts);
 	}
 
 	/**
-	 * returns a unmodifiable Set
+	 * Getter function for words
 	 * 
-	 * @return Set
+	 * @return a unmodifiable Set
 	 */
 	public Set<String> getWords() {
 		return Collections.unmodifiableSet(this.index.keySet());
+	}
+
+	/**
+	 * Gets an unmodifiable set of locations
+	 * 
+	 * @param element key value for locations
+	 * @return an unmodifiable set of locations
+	 */
+	public Set<String> getLocations(String element) {
+
+		if (contains(element)) {
+			return Collections.unmodifiableSet(index.get(element).keySet());
+		}
+
+		return Collections.emptySet();
+
 	}
 
 	/**
@@ -226,23 +233,11 @@ public class InvertedIndex {
 	 * @return a unmodifiable set of positions
 	 */
 	public Set<Integer> getPositions(String word, String position) {
+
 		if (contains(word, position)) {
 			return Collections.unmodifiableSet(index.get(word).get(position));
 		}
-		return Collections.emptySet();
 
-	}
-
-	/**
-	 * Gets an unmodifiable set of locations
-	 * 
-	 * @param word key value for locations
-	 * @return an unmodifiable set of locations
-	 */
-	public Set<String> getLocations(String word) {
-		if (contains(word)) {
-			return Collections.unmodifiableSet(index.get(word).keySet());
-		}
 		return Collections.emptySet();
 
 	}
@@ -254,4 +249,136 @@ public class InvertedIndex {
 	public String toString() {
 		return index.toString();
 	}
+
+	/**
+	 * The class that keeps track of the output of a search
+	 * 
+	 * @author CS 212 Software Development
+	 * @author University of San Francisco
+	 * @version Fall 2019
+	 */
+	public class SearchResult implements Comparable<SearchResult> {
+
+		/**
+		 * This will hold the location of the search result.
+		 */
+		private final String place;
+		/**
+		 * This will hold the count of matches.
+		 */
+		private int number;
+		/**
+		 * This will hold the score of the search result.
+		 */
+		private double totals;
+
+		/**
+		 * Constructor for Output class.
+		 * 
+		 * @param place
+		 *
+		 */
+		public SearchResult(String place) {
+			this.place = place;
+			this.number = 0;
+			this.totals = 0;
+		}
+
+		/**
+		 * Adds the input count to the current count of a Result instance.
+		 *
+		 * @param count The count to be added.
+		 */
+		public void addCount(int count) {
+			this.number += count;
+			this.totals = (double) this.number / counts.get(this.place);
+		}
+
+		/**
+		 * Getter for the Place variable
+		 * 
+		 * @return place
+		 */
+
+		public String getPlace() {
+			return place;
+		}
+
+		/**
+		 * Getter for the count data member.
+		 *
+		 * @return the count data member
+		 */
+		public int getNumber() {
+			return this.number;
+		}
+
+		/**
+		 * Getter for the score data member.
+		 *
+		 * @return the score
+		 */
+		public double getTotals() {
+			return this.totals;
+		}
+
+		/**
+		 * Updates the count and score associated to a word.
+		 *
+		 * @param word The word to be updated.
+		 */
+		public void updateCount(String word) {
+			this.number += index.get(word).get(this.place).size();
+			this.totals = (double) this.number / counts.get(this.place);
+		}
+
+		/**
+		 * @return A formatted string ready to write.
+		 */
+		public String placeOfString() {
+			return ("\"where\": " + "\"" + this.place + "\",");
+		}
+
+		/**
+		 * @return A formatted string ready to write.
+		 */
+		public String countOfString() {
+			return ("\"count\": " + this.number + ",");
+		}
+
+		/**
+		 * @return A formatted string ready to write.
+		 */
+		public String totalsOfString() {
+			return ("\"score\": " + String.format("%.8f", this.totals));
+		}
+
+		/**
+		 * Checks if another output's place is the same as this ones.
+		 *
+		 * @param otherPlace
+		 * @return true if same;
+		 */
+		public boolean samePlace(SearchResult otherPlace) {
+			return this.place.compareTo(otherPlace.place) == 0;
+		}
+
+		@Override
+		public int compareTo(SearchResult output) {
+			double totalDiff = this.totals - output.totals;
+
+			if (totalDiff != 0) {
+				return totalDiff > 0 ? -1 : 1;
+			} else {
+				int numberDiff = this.number - output.number;
+
+				if (numberDiff != 0) {
+					return numberDiff > 0 ? -1 : 1;
+				} else {
+					return (this.place.toLowerCase().compareTo(output.place.toLowerCase()));
+				}
+			}
+		}
+	}
+
 }

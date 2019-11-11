@@ -73,12 +73,23 @@ public class InvertedBuilder {
 	}
 
 	/**
-	 * Created the Path, this method is used in the Driver class
+	 * Adds Path from the @Build function
 	 * 
-	 * @param file The file added to inverted index
+	 * @param file The file whose path we are adding
 	 * @throws IOException
 	 */
 	public void addPath(Path file) throws IOException {
+		addPath(file, this.invertedIndex);
+	}
+
+	/**
+	 * Created the Path, this method is used in the Driver class
+	 * 
+	 * @param file  The file added to inverted index
+	 * @param index
+	 * @throws IOException
+	 */
+	public void addPath(Path file, InvertedIndex index) throws IOException {
 		Stemmer stemmer = new SnowballStemmer(DEFAULT);
 		try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8);) {
 			String line = reader.readLine();
@@ -90,7 +101,7 @@ public class InvertedBuilder {
 
 				for (String elements : lines) {
 					String element = stemmer.stem(elements).toString();
-					this.invertedIndex.add(element, location, ++i);
+					index.add(element, location, ++i);
 				}
 				line = reader.readLine();
 			}

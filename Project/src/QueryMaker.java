@@ -4,13 +4,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Set;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
- * TODO
+ * This class build queries using the inverted index passed in through the
+ * constructor
  * 
  * @author CS 212 Software Development
  * @author University of San Francisco
@@ -27,108 +29,83 @@ public class QueryMaker {
 	/**
 	 * A map for all the clean queries
 	 */
-	private TreeMap<String, ArrayList<Output>> queryMap; // TODO final
-
-	/**
-	 * The path to the file containing the queries printed out in the console
-	 */
-	private final Path queryPath; // TODO Remove
+	public final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap;
 
 	/**
 	 * Constructor method for QueryMaker
 	 *
-	 * @param inverted  The inverted index our query search will modify
-	 * @param queryPath The path
+	 * @param inverted The inverted index our query search will modify
 	 * @throws IOException
 	 */
-	public QueryMaker(InvertedIndex inverted, Path queryPath) throws IOException {
+	public QueryMaker(InvertedIndex inverted) throws IOException {
 		this.inverted = inverted;
 		this.queryMap = new TreeMap<>();
-		this.queryPath = queryPath;
 	}
 
-	/*
-	 * TODO But cannot safely return, even wrapped in unmodifiable, nested data structures.
-	 * Remove or replace with a safer get method.
-
-	public void parseQueries(Path queryPath, boolean exact) {
-		for each line in file
-			call parseQueries(line, exact)
-	}
-
-	public void parseQueries(String queryLine, boolean exact) {
-		TreeSet<String> queries = TextFileStemmer.uniqueStems(query);
-		String append = String.join(" ", queries);
-		if (queries.size() != 0 && !this.queryMap.containsKey(append)) {
-			this.queryMap.put(append, index.search(queries, exact));
-		}
-	}
-	 */
 	/**
+	 * 
 	 * Getter for the queryMap
-	 *
-	 * @return the map
+	 * 
+	 * @return the set of unmodifiable queries
 	 */
-	public Map<String, ArrayList<Output>> getQuery() {
-		return Collections.unmodifiableMap(this.queryMap);
+	public Set<String> getQuery() {
+		return Collections.unmodifiableSet(this.queryMap.keySet());
+	}
+
+	/**
+	 * Gets a list of outputs based on @param line from the query
+	 *
+	 * @param line The line we search the query for
+	 * @return the list of unmodifiable outputs
+	 */
+	public List<InvertedIndex.SearchResult> getOutput(String line) {
+		return Collections.unmodifiableList(this.queryMap.get(line));
 	}
 
 	/**
 	 * Method that checks if the map is empty.
 	 *
-	 * @return return boolean if map if empty or not
+	 * @return return boolean if map is empty or not
 	 */
 	public boolean isEmpty() {
 		return this.queryMap.keySet().size() == 0;
 	}
 
 	/**
-	 * This method searches queries for an exact match
-	 */
-	public void exactSearch() {
-		for (String query : this.queryMap.keySet()) {
-			this.queryMap.put(query, this.inverted.getOutput(query));
-		}
-	}
-
-	/**
-	 * This method searches through queries based on startswith or if String index
-	 * matches String queries, merges duplicates,and places them into the queryMap
-	 */
-	public void querySearch() {
-		for (String query : this.queryMap.keySet()) {
-			ArrayList<Output> output = new ArrayList<>();
-			for (String queryies : query.split(" ")) {
-				for (String indexes : inverted.getWords()) {
-					if (indexes.startsWith(queryies) || indexes.equals(queryies)) {
-						output.addAll(this.inverted.invertedOutput(indexes));
-					}
-				}
-			}
-			output = InvertedIndex.mergeDuplicates(output);
-			Collections.sort(output);
-			this.queryMap.put(query, output);
-		}
-
-	}
-
-	/**
-	 * This method opens the query file, cleans and stems the queries, and puts the
-	 * result into a Map
-	 * 
+	 * This function is called in driver and parses through the query files
+	 *
+	 * @param path  The path of the query file
+	 * @param match Return a boolean if we are looking for an exact match or not
 	 * @throws IOException
 	 */
-	public void queryGenerator() throws IOException {
-		String query;
-		try (BufferedReader reader = Files.newBufferedReader(this.queryPath, StandardCharsets.UTF_8);) {
-			while ((query = reader.readLine()) != null) {
-				TreeSet<String> queries = TextFileStemmer.uniqueStems(query);
-				String append = String.join(" ", queries);
-				if (queries.size() != 0 && !this.queryMap.containsKey(append)) {
-					this.queryMap.put(append, null);
-				}
+	public void queryParser(Path path, boolean match) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				queryLineParser(line, match);
 			}
 		}
+	}
+
+	/**
+	 * Parses a Query line made up of words.
+	 *
+	 * @param line  The line in the query we are parsing through
+	 * @param match Return a boolean if we are looking for an exact match or not
+	 */
+	public void queryLineParser(String line, boolean match) {
+		TreeSet<String> lines = TextFileStemmer.uniqueStems(line);
+		String string = String.join(" ", lines);
+		if (!queryMap.containsKey(string) && lines.size() != 0) {
+			this.queryMap.put(string, inverted.searchChooser(lines, match));
+		}
+	}
+
+	/**
+	 * Print out the map of queries
+	 */
+	public String toString() {
+		return queryMap.toString();
 	}
 
 }
