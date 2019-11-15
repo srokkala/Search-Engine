@@ -29,7 +29,7 @@ public class QueryMaker {
 	/**
 	 * A map for all the clean queries
 	 */
-	public final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap;
+	public final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap; // TODO private
 
 	/**
 	 * Constructor method for QueryMaker
@@ -37,7 +37,7 @@ public class QueryMaker {
 	 * @param inverted The inverted index our query search will modify
 	 * @throws IOException
 	 */
-	public QueryMaker(InvertedIndex inverted) throws IOException {
+	public QueryMaker(InvertedIndex inverted) throws IOException { // TODO Remove throws IOException
 		this.inverted = inverted;
 		this.queryMap = new TreeMap<>();
 	}
@@ -59,6 +59,7 @@ public class QueryMaker {
 	 * @return the list of unmodifiable outputs
 	 */
 	public List<InvertedIndex.SearchResult> getOutput(String line) {
+		// TODO Need to check first that the line exists (is a key)
 		return Collections.unmodifiableList(this.queryMap.get(line));
 	}
 
@@ -101,6 +102,24 @@ public class QueryMaker {
 		}
 	}
 
+	/* TODO
+	public void queryLineParser(String line, boolean match) {
+		TreeSet<String> queries = TextFileStemmer.uniqueStems(line);
+		
+		if (queries.isEmpty()) {
+			return;
+		}
+		
+		String joined = String.join(" ", queries);
+		
+		if (queryMap.containsKey(joined)) {
+			return;
+		}
+		
+		this.queryMap.put(joined, inverted.searchChooser(queries, match));
+	}
+	*/
+	
 	/**
 	 * Print out the map of queries
 	 */

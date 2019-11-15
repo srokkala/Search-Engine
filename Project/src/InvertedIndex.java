@@ -127,6 +127,16 @@ public class InvertedIndex {
 				search.put(location, output);
 				outputs.add(output);
 			}
+			
+			/* TODO
+			if (!search.containsKey(location)) {
+				SearchResult output = new SearchResult(location);
+				search.put(location, output);
+				outputs.add(output);
+			}
+			
+			search.get(location).updateCount(word);
+			*/
 		}
 	}
 
@@ -270,12 +280,12 @@ public class InvertedIndex {
 		/**
 		 * This will hold the score of the search result.
 		 */
-		private double totals;
+		private double totals; // TODO Refactor score
 
 		/**
 		 * Constructor for Output class.
 		 * 
-		 * @param place
+		 * @param place TODO
 		 *
 		 */
 		public SearchResult(String place) {
@@ -289,7 +299,7 @@ public class InvertedIndex {
 		 *
 		 * @param count The count to be added.
 		 */
-		public void addCount(int count) {
+		public void addCount(int count) { // TODO Remove
 			this.number += count;
 			this.totals = (double) this.number / counts.get(this.place);
 		}
@@ -327,7 +337,7 @@ public class InvertedIndex {
 		 *
 		 * @param word The word to be updated.
 		 */
-		public void updateCount(String word) {
+		public void updateCount(String word) { // TODO private
 			this.number += index.get(word).get(this.place).size();
 			this.totals = (double) this.number / counts.get(this.place);
 		}
