@@ -46,10 +46,10 @@ public class InvertedIndex {
 	 */
 	public boolean add(String element, String file, int position) {
 		boolean inserted;
-		index.putIfAbsent(element, new TreeMap<>());
-		index.get(element).putIfAbsent(file, new TreeSet<>());
+		this.index.putIfAbsent(element, new TreeMap<>());
+		this.index.get(element).putIfAbsent(file, new TreeSet<>());
 		inserted = index.get(element).get(file).add(position);
-		counts.putIfAbsent(file, position);
+		this.counts.putIfAbsent(file, position);
 
 		if (position > counts.get(file)) {
 			counts.put(file, position);
@@ -119,24 +119,13 @@ public class InvertedIndex {
 	 */
 	private void searchHelper(ArrayList<SearchResult> outputs, Map<String, SearchResult> search, String word) {
 		for (String location : this.index.get(word).keySet()) {
-			if (search.containsKey(location)) {
-				search.get(location).updateCount(word);
-			} else {
-				SearchResult output = new SearchResult(location);
-				output.addCount(this.index.get(word).get(location).size());
-				search.put(location, output);
-				outputs.add(output);
-			}
-			
-			/* TODO
 			if (!search.containsKey(location)) {
 				SearchResult output = new SearchResult(location);
 				search.put(location, output);
 				outputs.add(output);
 			}
-			
+
 			search.get(location).updateCount(word);
-			*/
 		}
 	}
 
@@ -280,28 +269,18 @@ public class InvertedIndex {
 		/**
 		 * This will hold the score of the search result.
 		 */
-		private double totals; // TODO Refactor score
+		private double score;
 
 		/**
-		 * Constructor for Output class.
+		 * Constructor for SearchResult class.
 		 * 
-		 * @param place TODO
+		 * @param place Create the SearchResult using this parameter
 		 *
 		 */
 		public SearchResult(String place) {
 			this.place = place;
 			this.number = 0;
-			this.totals = 0;
-		}
-
-		/**
-		 * Adds the input count to the current count of a Result instance.
-		 *
-		 * @param count The count to be added.
-		 */
-		public void addCount(int count) { // TODO Remove
-			this.number += count;
-			this.totals = (double) this.number / counts.get(this.place);
+			this.score = 0;
 		}
 
 		/**
@@ -329,7 +308,7 @@ public class InvertedIndex {
 		 * @return the score
 		 */
 		public double getTotals() {
-			return this.totals;
+			return this.score;
 		}
 
 		/**
@@ -337,9 +316,9 @@ public class InvertedIndex {
 		 *
 		 * @param word The word to be updated.
 		 */
-		public void updateCount(String word) { // TODO private
+		private void updateCount(String word) {
 			this.number += index.get(word).get(this.place).size();
-			this.totals = (double) this.number / counts.get(this.place);
+			this.score = (double) this.number / counts.get(this.place);
 		}
 
 		/**
@@ -360,7 +339,7 @@ public class InvertedIndex {
 		 * @return A formatted string ready to write.
 		 */
 		public String totalsOfString() {
-			return ("\"score\": " + String.format("%.8f", this.totals));
+			return ("\"score\": " + String.format("%.8f", this.score));
 		}
 
 		/**
@@ -375,7 +354,7 @@ public class InvertedIndex {
 
 		@Override
 		public int compareTo(SearchResult output) {
-			double totalDiff = this.totals - output.totals;
+			double totalDiff = this.score - output.score;
 
 			if (totalDiff != 0) {
 				return totalDiff > 0 ? -1 : 1;

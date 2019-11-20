@@ -74,7 +74,7 @@ public class Driver {
 		if (argumentParser.hasFlag("-results")) {
 			Path path = argumentParser.getPath("-results", Path.of("results.json"));
 			try {
-				SimpleJsonWriter.asQuery(maker.queryMap, path);
+				maker.queryWriter(path);
 			} catch (IOException e) {
 				System.out.println("Something went wrong while writing search results to path: " + path);
 			}

@@ -29,7 +29,8 @@ public class InvertedBuilder {
 	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
 
 	/**
-	 * TODO 
+	 * Constructor method for Inverted Builder
+	 * 
 	 * @param invertedIndex Inverted Index structure that will be built.
 	 */
 	public InvertedBuilder(InvertedIndex invertedIndex) {
