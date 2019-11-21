@@ -29,9 +29,7 @@ public class InvertedBuilder {
 	public static final SnowballStemmer.ALGORITHM DEFAULT = SnowballStemmer.ALGORITHM.ENGLISH;
 
 	/**
-	 * Constructor method for Inverted Builder
-	 * 
-	 * @param invertedIndex Inverted Index structure that will be built.
+	 * @param invertedIndex The inverted index we will add to
 	 */
 	public InvertedBuilder(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
@@ -40,10 +38,11 @@ public class InvertedBuilder {
 	/**
 	 * This method creates paths during directory traversal
 	 * 
-	 * @param path The initial traversal point
+	 * @param path    The initial traversal point
+	 * @param threads Passing through the number of threads
 	 * @throws IOException
 	 */
-	public void build(Path path) throws IOException {
+	public void build(Path path, int threads) throws IOException {
 		for (Path currentPath : getTextFiles(path)) {
 			if (isText(currentPath)) {
 				addPath(currentPath);
@@ -88,10 +87,10 @@ public class InvertedBuilder {
 	 * Created the Path, this method is used in the Driver class
 	 * 
 	 * @param file  The file added to inverted index
-	 * @param index
+	 * @param index The inverted index we are adding to
 	 * @throws IOException
 	 */
-	public void addPath(Path file, InvertedIndex index) throws IOException {
+	public static void addPath(Path file, InvertedIndex index) throws IOException {
 		Stemmer stemmer = new SnowballStemmer(DEFAULT);
 		try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8);) {
 			String line = reader.readLine();

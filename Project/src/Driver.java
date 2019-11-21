@@ -23,20 +23,39 @@ public class Driver {
 	 */
 	public static void main(String[] args) throws IOException {
 		/* Store initial start time */
+
+		// initial thread count
+		int threads = 1;
+
 		Instant start = Instant.now();
 
-		InvertedIndex invertedIndex = new InvertedIndex();
-
 		ArgumentParser argumentParser = new ArgumentParser(args);
+
+		InvertedIndex invertedIndex = new InvertedIndex();
 
 		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
 
 		QueryMaker maker = new QueryMaker(invertedIndex);
 
+		if (argumentParser.hasFlag("-threads")) {
+			try {
+				threads = Integer.parseInt(argumentParser.getString("-threads"));
+				if (threads == 0) {
+					threads = 5;
+				}
+			} catch (Exception e) {
+				System.out.println("Setting Thread Count to 5");
+				threads = 5;
+			}
+			invertedIndex = new MultithreadedInvertedIndex();
+			builder = new MultithreadedInvertedBuilder((MultithreadedInvertedIndex) invertedIndex);
+			maker = new MultithreadedQueryMaker((MultithreadedInvertedIndex) invertedIndex);
+		}
+
 		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
 			Path path = argumentParser.getPath("-path");
 			try {
-				builder.build(path);
+				builder.build(path, threads);
 			} catch (IOException e) {
 				System.out.println("Path can not be traversed: " + path.toString());
 			}
@@ -63,7 +82,7 @@ public class Driver {
 		if (argumentParser.hasFlag("-query") && argumentParser.getPath("-query") != null) {
 			Path queryPath = argumentParser.getPath("-query");
 			try {
-				maker.queryParser(queryPath, argumentParser.hasFlag("-exact"));
+				maker.queryParser(queryPath, threads, argumentParser.hasFlag("-exact"));
 			} catch (IOException e) {
 				System.out.println("There was an issue while reading the query file: " + queryPath.toString());
 			} catch (Exception r) {

@@ -4,11 +4,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Set;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * This class build queries using the inverted index passed in through the
@@ -76,11 +76,12 @@ public class QueryMaker {
 	/**
 	 * This function is called in driver and parses through the query files
 	 *
-	 * @param path  The path of the query file
-	 * @param match Return a boolean if we are looking for an exact match or not
+	 * @param path    The path of the query file
+	 * @param threads Passing through the number of threads
+	 * @param match   Return a boolean if we are looking for an exact match or not
 	 * @throws IOException
 	 */
-	public void queryParser(Path path, boolean match) throws IOException {
+	public void queryParser(Path path, int threads, boolean match) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {

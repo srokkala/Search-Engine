@@ -51,6 +51,8 @@ public class ArgumentParser {
 				if (i + 1 != args.length) {
 					if (isValue(args[i + 1])) {
 						map.put(line, args[i + 1]);
+					} else {
+						map.put(line, null);
 					}
 				}
 			}
@@ -71,8 +73,14 @@ public class ArgumentParser {
 	public static boolean isFlag(String arg) {
 
 		if ((arg != null)) {
-			return ((arg.startsWith("-") && (arg.length() > 1)));
-		} else {
+			if ((arg.startsWith("-") && (arg.length() > 1))) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		else {
 			return false;
 		}
 	}
@@ -88,11 +96,14 @@ public class ArgumentParser {
 	 * @see String#length()
 	 */
 	public static boolean isValue(String arg) {
-		try {
-			return (arg.charAt(0) != '-' && arg != "");
-		} catch (Exception e) {
-			return false;
+		if (arg != null) {
+			if (arg.startsWith("-") || (arg.length() < 1)) {
+				return false;
+			} else {
+				return true;
+			}
 		}
+		return false;
 
 	}
 
@@ -102,6 +113,7 @@ public class ArgumentParser {
 	 * @return number of unique flags
 	 */
 	public int numFlags() {
+		// System.out.println(map.keySet().size());
 		return map.keySet().size();
 	}
 
@@ -113,7 +125,14 @@ public class ArgumentParser {
 	 */
 	public boolean hasFlag(String flag) {
 
-		return map.containsKey(flag);
+		if (map.containsKey(flag)) {
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
 	}
 
 	/**
@@ -202,5 +221,16 @@ public class ArgumentParser {
 	public String toString() {
 		// DO NOT MODIFY; THIS METHOD IS PROVIDED FOR YOU
 		return this.map.toString();
+	}
+
+	/**
+	 * A simple main method that parses the command-line arguments provided and
+	 * prints the result to the console.
+	 *
+	 * @param args the command-line arguments to parse
+	 */
+	public static void main(String[] args) {
+		var map = new ArgumentParser(args);
+		System.out.println(map);
 	}
 }

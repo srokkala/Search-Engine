@@ -46,10 +46,10 @@ public class InvertedIndex {
 	 */
 	public boolean add(String element, String file, int position) {
 		boolean inserted;
-		this.index.putIfAbsent(element, new TreeMap<>());
-		this.index.get(element).putIfAbsent(file, new TreeSet<>());
+		index.putIfAbsent(element, new TreeMap<>());
+		index.get(element).putIfAbsent(file, new TreeSet<>());
 		inserted = index.get(element).get(file).add(position);
-		this.counts.putIfAbsent(file, position);
+		counts.putIfAbsent(file, position);
 
 		if (position > counts.get(file)) {
 			counts.put(file, position);
@@ -261,7 +261,7 @@ public class InvertedIndex {
 		/**
 		 * This will hold the location of the search result.
 		 */
-		private final String place;
+		private String place;
 		/**
 		 * This will hold the count of matches.
 		 */
@@ -316,7 +316,7 @@ public class InvertedIndex {
 		 *
 		 * @param word The word to be updated.
 		 */
-		private void updateCount(String word) {
+		public void updateCount(String word) {
 			this.number += index.get(word).get(this.place).size();
 			this.score = (double) this.number / counts.get(this.place);
 		}
