@@ -111,7 +111,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 */
 	@Override
 	public boolean contains(String word, String path, int position) {
-		lock.writeLock().lock();
+		lock.writeLock().lock(); // TODO read lock!
 		try {
 			return super.contains(word, path, position);
 		} finally {
@@ -153,6 +153,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 
+	// TODO Remove searchChooser
 	/**
 	 * Overrides the function in @class InvertedIndex If the @param match is true we
 	 * are return the output from matcher checker, otherwise we return output from
@@ -204,6 +205,8 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 
+	// TODO Override and protect getPositions
+	
 	/**
 	 * Overrides the function in @class InvertedIndex
 	 * 
@@ -211,6 +214,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 */
 	@Override
 	public String toString() {
+		// TODO Lock for read
 		return super.toString();
 	}
 }

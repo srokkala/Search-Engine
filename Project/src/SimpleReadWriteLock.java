@@ -90,7 +90,7 @@ public class SimpleReadWriteLock {
 						lock.wait();
 					}
 					catch (InterruptedException e) {
-						e.printStackTrace();
+						e.printStackTrace(); // TODO Fix
 					}
 				}
 				reader++;
@@ -127,7 +127,7 @@ public class SimpleReadWriteLock {
 						lock.wait();
 					}
 					catch (InterruptedException e) {
-						e.printStackTrace();
+						e.printStackTrace(); // TODO Fix
 					}
 				}
 				writeThread = Thread.currentThread();
