@@ -14,6 +14,9 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	 */
 	private final MultithreadedInvertedIndex inverted;
 
+	// TODO Instead of passing int threads to the build method, pass to the constructor and save as a member
+	// TODO If you passed a WorkQueue object instead, you can get this to be pretty sleek and fast
+	
 	/**
 	 * Constructor Method
 	 * 
@@ -57,7 +60,7 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	 * @author University of San Francisco
 	 * @version Fall 2019
 	 */
-	private static class BuildHelper implements Runnable {
+	private static class BuildHelper implements Runnable { // TODO Make this a non-static class
 
 		/**
 		 * New path object that will take the path from the build function from @class
@@ -69,7 +72,7 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 		/**
 		 * Creating a usable object of @class MultiThreadedInvertedIndex
 		 */
-		private final MultithreadedInvertedIndex inverted;
+		private final MultithreadedInvertedIndex inverted; // TODO Remove
 
 		/**
 		 * Constructor Method
@@ -91,8 +94,15 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 		public void run() {
 			try {
 				addPath(path, inverted);
+				
+				/* TODO
+				InvertedIndex local = new InvertedIndex();
+				addPath(path, local);
+				inverted.addAll(local); <--- create this in inverted index and override in thread safe version
+				*/
+				
 			} catch (IOException e) {
-				e.printStackTrace();
+				e.printStackTrace(); // TODO throw UncheckedIOException(e) or just output a warning
 			}
 
 		}

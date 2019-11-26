@@ -7,6 +7,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+/*
+ * TODO Multiple threads aren't really able to run at the same time.
+ * But, with this extends relationship, there aren't many options for speeding this up.
+ * 
+ * The only way to speed up is to re-implement and lock around access to the map.
+ * 
+ * Create a QueryMakerInterface that has the common methods and a default implementation 
+ * of the public void queryParser(Path path, int threads, boolean match) throws IOException
+ * 
+ * Implelment this interface in QueryMaker and MultithreadedQueryMaker. In the multithreaded
+ * version make sure to synchronize ONLY around access to the map and not the search.
+ */
+
 /**
  * 
  * This is the multithreaded version of the QueryMaker class and all functions

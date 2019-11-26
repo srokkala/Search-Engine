@@ -21,7 +21,7 @@ public class Driver {
 	 * @throws IOException
 	 *
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
 		/* Store initial start time */
 
 		// initial thread count
@@ -36,6 +36,8 @@ public class Driver {
 		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
 
 		QueryMaker maker = new QueryMaker(invertedIndex);
+		
+		// TODO WorkQueue queue = null;
 
 		if (argumentParser.hasFlag("-threads")) {
 			try {
@@ -47,11 +49,21 @@ public class Driver {
 				System.out.println("Setting Thread Count to 5");
 				threads = 5;
 			}
+			
+			// TODO MultithreadedInvertedIndex threadSafe = new MultithreadedInvertedIndex();
+			// TODO invertedIndex = threadSafe;
+			// TODO builder = new MultithreadedInvertedBuilder(threadSafe); ...etc.
+			
 			invertedIndex = new MultithreadedInvertedIndex();
 			builder = new MultithreadedInvertedBuilder((MultithreadedInvertedIndex) invertedIndex);
 			maker = new MultithreadedQueryMaker((MultithreadedInvertedIndex) invertedIndex);
 		}
 
+		/*
+		 * TODO Do not initialize invertedIndex, builder, and maker above. Init the single-threaded
+		 * versions in an else block instead.
+		 */
+		
 		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
 			Path path = argumentParser.getPath("-path");
 			try {
@@ -97,7 +109,6 @@ public class Driver {
 			} catch (IOException e) {
 				System.out.println("Something went wrong while writing search results to path: " + path);
 			}
-
 		}
 
 		/* Calculate time elapsed and output */

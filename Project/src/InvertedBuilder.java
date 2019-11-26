@@ -35,6 +35,7 @@ public class InvertedBuilder {
 		this.invertedIndex = invertedIndex;
 	}
 
+	// TODO Remove int threads from the method
 	/**
 	 * This method creates paths during directory traversal
 	 * 
