@@ -14,33 +14,37 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	 */
 	private final MultithreadedInvertedIndex inverted;
 
-	// TODO Instead of passing int threads to the build method, pass to the constructor and save as a member
-	// TODO If you passed a WorkQueue object instead, you can get this to be pretty sleek and fast
-	
+	/**
+	 * Number of Threads
+	 */
+	private final int threads;
+
 	/**
 	 * Constructor Method
 	 * 
 	 * @param inverted The thread safe inverted index we will add to
+	 * @param threads  Passing in the number of threads
 	 */
-	public MultithreadedInvertedBuilder(MultithreadedInvertedIndex inverted) {
+	public MultithreadedInvertedBuilder(MultithreadedInvertedIndex inverted, int threads) {
 		super(inverted);
 		this.inverted = inverted;
+		this.threads = threads;
+
 	}
 
 	/**
 	 * Overrides function in @class InvertedBuilder This method creates paths during
 	 * directory traversal
 	 * 
-	 * @param path    The initial traversal point
-	 * @param threads Passing through the number of threads
+	 * @param path The initial traversal point
 	 * @throws IOException
 	 */
 	@Override
-	public void build(Path path, int threads) throws IOException {
+	public void build(Path path) throws IOException {
 		WorkQueue queue = new WorkQueue(threads);
 		for (Path currentPath : getTextFiles(path)) {
 			if (isText(currentPath)) {
-				queue.execute(new BuildHelper(currentPath, this.inverted));
+				queue.execute(new BuildHelper(currentPath));
 
 			}
 		}
@@ -60,7 +64,7 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	 * @author University of San Francisco
 	 * @version Fall 2019
 	 */
-	private static class BuildHelper implements Runnable { // TODO Make this a non-static class
+	private class BuildHelper implements Runnable {
 
 		/**
 		 * New path object that will take the path from the build function from @class
@@ -70,20 +74,13 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 		private final Path path;
 
 		/**
-		 * Creating a usable object of @class MultiThreadedInvertedIndex
-		 */
-		private final MultithreadedInvertedIndex inverted; // TODO Remove
-
-		/**
 		 * Constructor Method
 		 * 
-		 * @param path     The initial traversal point passed in
-		 * @param inverted The threadsafe object we created in @class
-		 *                 MultiThreadedInvertedBuilder
+		 * @param path The initial traversal point passed in
 		 */
-		public BuildHelper(Path path, MultithreadedInvertedIndex inverted) {
+		public BuildHelper(Path path) {
 			this.path = path;
-			this.inverted = inverted;
+
 		}
 
 		/**
@@ -93,16 +90,12 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 		@Override
 		public void run() {
 			try {
-				addPath(path, inverted);
-				
-				/* TODO
 				InvertedIndex local = new InvertedIndex();
 				addPath(path, local);
-				inverted.addAll(local); <--- create this in inverted index and override in thread safe version
-				*/
-				
+				inverted.addAll(local);
+
 			} catch (IOException e) {
-				e.printStackTrace(); // TODO throw UncheckedIOException(e) or just output a warning
+				System.out.println("Warni;ng: Adding To Inverted Index Failed");
 			}
 
 		}

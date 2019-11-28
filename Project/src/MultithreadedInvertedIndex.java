@@ -111,7 +111,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 */
 	@Override
 	public boolean contains(String word, String path, int position) {
-		lock.writeLock().lock(); // TODO read lock!
+		lock.readLock().lock();
 		try {
 			return super.contains(word, path, position);
 		} finally {
@@ -153,24 +153,18 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	// TODO Remove searchChooser
 	/**
-	 * Overrides the function in @class InvertedIndex If the @param match is true we
-	 * are return the output from matcher checker, otherwise we return output from
-	 * the partial match checker
-	 *
-	 * @param queries The queries we pass through the conditional
-	 * @param match   A boolean that cause the conditional to point to the right
-	 *                function to execute
-	 * @return an arraylist of outputs depending on the function called
+	 * Overrides the function in @class InvertedIndex 
+	 * 
+	 * @param local a local Inverted Index we create for speed
 	 */
 	@Override
-	public ArrayList<SearchResult> searchChooser(Collection<String> queries, boolean match) {
-		lock.readLock().lock();
+	public void addAll(InvertedIndex local) {
+		lock.writeLock().lock();
 		try {
-			return super.searchChooser(queries, match);
+			super.addAll(local);
 		} finally {
-			lock.readLock().unlock();
+			lock.writeLock().unlock();
 		}
 	}
 
@@ -205,8 +199,25 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	// TODO Override and protect getPositions
-	
+	/**
+	 * Override the function in @class InvertedIndex Getter function for position of
+	 * a word
+	 * 
+	 * @param word     word we are checking
+	 * @param position position we are checking
+	 * @return a unmodifiable set of positions
+	 */
+	@Override
+	public Set<Integer> getPositions(String word, String position) {
+		lock.readLock().lock();
+		try {
+			return super.getPositions(word, position);
+		} finally {
+			lock.readLock().unlock();
+		}
+
+	}
+
 	/**
 	 * Overrides the function in @class InvertedIndex
 	 * 
@@ -214,7 +225,11 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 */
 	@Override
 	public String toString() {
-		// TODO Lock for read
-		return super.toString();
+		lock.readLock().lock();
+		try {
+			return super.toString();
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 }

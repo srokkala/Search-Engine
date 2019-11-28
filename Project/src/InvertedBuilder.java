@@ -35,15 +35,13 @@ public class InvertedBuilder {
 		this.invertedIndex = invertedIndex;
 	}
 
-	// TODO Remove int threads from the method
 	/**
 	 * This method creates paths during directory traversal
 	 * 
-	 * @param path    The initial traversal point
-	 * @param threads Passing through the number of threads
+	 * @param path The initial traversal point
 	 * @throws IOException
 	 */
-	public void build(Path path, int threads) throws IOException {
+	public void build(Path path) throws IOException {
 		for (Path currentPath : getTextFiles(path)) {
 			if (isText(currentPath)) {
 				addPath(currentPath);

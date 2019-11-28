@@ -174,6 +174,37 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Goes through our local inverted index and adds to it
+	 * 
+	 * @param local Our local inverted index we use to optimize speed
+	 */
+
+	public void addAll(InvertedIndex local) {
+		for (String localWord : local.index.keySet()) {
+			if (this.index.containsKey(localWord) == false) {
+				this.index.put(localWord, local.index.get(localWord));
+			} else {
+				for (String localLocations : local.index.get(localWord).keySet()) {
+					if (this.index.get(localWord).containsKey(localLocations) == false) {
+						this.index.get(localWord).put(localLocations, local.index.get(localWord).get(localLocations));
+					} else {
+						this.index.get(localWord).get(localLocations)
+								.addAll(local.index.get(localWord).get(localLocations));
+					}
+				}
+			}
+		}
+		for (String localLocations : local.counts.keySet()) {
+			if (this.counts.containsKey(localLocations)) {
+				this.counts.put(localLocations,
+						Math.max(this.counts.get(localLocations), local.counts.get(localLocations)));
+			} else {
+				this.counts.put(localLocations, local.counts.get(localLocations));
+			}
+		}
+	}
+
+	/**
 	 * If the @param match is true we are return the output from matcher checker,
 	 * otherwise we return output from the partial match checker
 	 *

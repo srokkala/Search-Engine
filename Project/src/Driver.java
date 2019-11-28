@@ -21,7 +21,7 @@ public class Driver {
 	 * @throws IOException
 	 *
 	 */
-	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
+	public static void main(String[] args) throws IOException {
 		/* Store initial start time */
 
 		// initial thread count
@@ -31,13 +31,11 @@ public class Driver {
 
 		ArgumentParser argumentParser = new ArgumentParser(args);
 
-		InvertedIndex invertedIndex = new InvertedIndex();
+		InvertedIndex invertedIndex;
 
-		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
+		InvertedBuilder builder;
 
-		QueryMaker maker = new QueryMaker(invertedIndex);
-		
-		// TODO WorkQueue queue = null;
+		QueryMakerInterface maker;
 
 		if (argumentParser.hasFlag("-threads")) {
 			try {
@@ -49,25 +47,23 @@ public class Driver {
 				System.out.println("Setting Thread Count to 5");
 				threads = 5;
 			}
-			
-			// TODO MultithreadedInvertedIndex threadSafe = new MultithreadedInvertedIndex();
-			// TODO invertedIndex = threadSafe;
-			// TODO builder = new MultithreadedInvertedBuilder(threadSafe); ...etc.
-			
-			invertedIndex = new MultithreadedInvertedIndex();
-			builder = new MultithreadedInvertedBuilder((MultithreadedInvertedIndex) invertedIndex);
-			maker = new MultithreadedQueryMaker((MultithreadedInvertedIndex) invertedIndex);
+
+			MultithreadedInvertedIndex threadSafe = new MultithreadedInvertedIndex();
+			invertedIndex = threadSafe;
+			builder = new MultithreadedInvertedBuilder(threadSafe, threads);
+			maker = new MultithreadedQueryMaker(threadSafe, threads);
+
+		} else {
+			invertedIndex = new InvertedIndex();
+			maker = new QueryMaker(invertedIndex);
+			builder = new InvertedBuilder(invertedIndex);
+
 		}
 
-		/*
-		 * TODO Do not initialize invertedIndex, builder, and maker above. Init the single-threaded
-		 * versions in an else block instead.
-		 */
-		
 		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
 			Path path = argumentParser.getPath("-path");
 			try {
-				builder.build(path, threads);
+				builder.build(path);
 			} catch (IOException e) {
 				System.out.println("Path can not be traversed: " + path.toString());
 			}
@@ -94,7 +90,7 @@ public class Driver {
 		if (argumentParser.hasFlag("-query") && argumentParser.getPath("-query") != null) {
 			Path queryPath = argumentParser.getPath("-query");
 			try {
-				maker.queryParser(queryPath, threads, argumentParser.hasFlag("-exact"));
+				maker.queryParser(queryPath, argumentParser.hasFlag("-exact"));
 			} catch (IOException e) {
 				System.out.println("There was an issue while reading the query file: " + queryPath.toString());
 			} catch (Exception r) {

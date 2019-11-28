@@ -32,7 +32,6 @@ public class SimpleReadWriteLock {
 	 */
 	private final Object lock;
 
-
 	/**
 	 * Initializes a new simple read/write lock.
 	 */
@@ -63,12 +62,12 @@ public class SimpleReadWriteLock {
 	}
 
 	/**
-	 * Determines whether the thread running this code and the other thread are
-	 * in fact the same thread.
+	 * Determines whether the thread running this code and the other thread are in
+	 * fact the same thread.
 	 *
 	 * @param other the other thread to compare
 	 * @return true if the thread running this code and the other thread are not
-	 * null and have the same ID
+	 *         null and have the same ID
 	 *
 	 * @see Thread#getId()
 	 * @see Thread#currentThread()
@@ -84,13 +83,12 @@ public class SimpleReadWriteLock {
 
 		@Override
 		public void lock() {
-			synchronized(lock) {
+			synchronized (lock) {
 				while (writer > 0) {
 					try {
 						lock.wait();
-					}
-					catch (InterruptedException e) {
-						e.printStackTrace(); // TODO Fix
+					} catch (InterruptedException e) {
+						System.out.println("Failed to Lock!");
 					}
 				}
 				reader++;
@@ -99,7 +97,7 @@ public class SimpleReadWriteLock {
 
 		@Override
 		public void unlock() {
-			synchronized(lock) {
+			synchronized (lock) {
 				reader--;
 				if (reader == 0) {
 					lock.notifyAll();
@@ -113,7 +111,6 @@ public class SimpleReadWriteLock {
 	 */
 	private class WriteLock implements SimpleLock {
 
-
 		/**
 		 * The write thread.
 		 */
@@ -121,13 +118,12 @@ public class SimpleReadWriteLock {
 
 		@Override
 		public void lock() {
-			synchronized(lock) {
+			synchronized (lock) {
 				while (writer > 0 || reader > 0) {
 					try {
 						lock.wait();
-					}
-					catch (InterruptedException e) {
-						e.printStackTrace(); // TODO Fix
+					} catch (InterruptedException e) {
+						System.out.println("Failed to Lock!");
 					}
 				}
 				writeThread = Thread.currentThread();
@@ -135,19 +131,17 @@ public class SimpleReadWriteLock {
 			}
 		}
 
-
 		@Override
 		public void unlock() throws ConcurrentModificationException {
-			if(sameThread(writeThread)) {
-				synchronized(lock) {
+			if (sameThread(writeThread)) {
+				synchronized (lock) {
 					writer--;
 					if (writer == 0) {
 						writeThread = null;
 						lock.notifyAll();
 					}
 				}
-			}
-			else {
+			} else {
 				throw new ConcurrentModificationException();
 			}
 		}
