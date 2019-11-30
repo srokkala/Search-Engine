@@ -31,7 +31,7 @@ public class WebCrawler  {
 	private final int numThreads;
 
 	/**
-	 * Workqueue adding to support multithreading
+	 * Workqueue added to support multithreading
 	 */
 	private WorkQueue workQueue;
 
@@ -102,6 +102,9 @@ public class WebCrawler  {
 	/**
 	 * This inner class helps with thread safety and is called in the build function 
 	 *
+	 * @author CS 212 Software Development
+	 * @author University of San Francisco
+	 * @version Fall 2019
 	 */
 	private class ThreadSafe implements Runnable {
 
