@@ -1,7 +1,9 @@
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -31,13 +33,15 @@ public class Driver {
 
 		ArgumentParser argumentParser = new ArgumentParser(args);
 
-		InvertedIndex invertedIndex = new InvertedIndex();
+		InvertedIndex invertedIndex;
 
-		InvertedBuilder builder = new InvertedBuilder(invertedIndex);
+		InvertedBuilder builder;
 
-		QueryMaker maker = new QueryMaker(invertedIndex);
+		QueryMakerInterface maker;
+		
+		WebCrawler crawler;
 
-		if (argumentParser.hasFlag("-threads")) {
+		if (argumentParser.hasFlag("-threads") || argumentParser.hasFlag("-url")) {
 			try {
 				threads = Integer.parseInt(argumentParser.getString("-threads"));
 				if (threads == 0) {
@@ -47,15 +51,42 @@ public class Driver {
 				System.out.println("Setting Thread Count to 5");
 				threads = 5;
 			}
-			invertedIndex = new MultithreadedInvertedIndex();
-			builder = new MultithreadedInvertedBuilder((MultithreadedInvertedIndex) invertedIndex);
-			maker = new MultithreadedQueryMaker((MultithreadedInvertedIndex) invertedIndex);
+
+			MultithreadedInvertedIndex threadSafe = new MultithreadedInvertedIndex();
+			invertedIndex = threadSafe;
+			builder = new MultithreadedInvertedBuilder(threadSafe, threads);
+			maker = new MultithreadedQueryMaker(threadSafe, threads);
+			
+			if(argumentParser.hasFlag("-limit"))
+			{
+				crawler = new WebCrawler(threadSafe,threads,Integer.parseInt(argumentParser.getString("-limit")));
+			}
+			else {
+				crawler = new WebCrawler(threadSafe, threads, 50);
+			}
+			
+			if(argumentParser.hasFlag("-url")) {
+				try {
+					URL seed = new URL(argumentParser.getString("-url"));
+					crawler.build(seed);
+				}
+				catch(Exception e) {
+					System.out.println("Error occured creating the URL");
+				}
+			}
+		} 
+		
+		else {
+			invertedIndex = new InvertedIndex();
+			maker = new QueryMaker(invertedIndex);
+			builder = new InvertedBuilder(invertedIndex);
+
 		}
 
 		if (argumentParser.hasFlag("-path") && argumentParser.getPath("-path") != null) {
 			Path path = argumentParser.getPath("-path");
 			try {
-				builder.build(path, threads);
+				builder.build(path);
 			} catch (IOException e) {
 				System.out.println("Path can not be traversed: " + path.toString());
 			}
@@ -82,7 +113,7 @@ public class Driver {
 		if (argumentParser.hasFlag("-query") && argumentParser.getPath("-query") != null) {
 			Path queryPath = argumentParser.getPath("-query");
 			try {
-				maker.queryParser(queryPath, threads, argumentParser.hasFlag("-exact"));
+				maker.queryParser(queryPath, argumentParser.hasFlag("-exact"));
 			} catch (IOException e) {
 				System.out.println("There was an issue while reading the query file: " + queryPath.toString());
 			} catch (Exception r) {
@@ -93,11 +124,10 @@ public class Driver {
 		if (argumentParser.hasFlag("-results")) {
 			Path path = argumentParser.getPath("-results", Path.of("results.json"));
 			try {
-				SimpleJsonWriter.asQuery(maker.queryMap, path);
+				maker.queryWriter(path);
 			} catch (IOException e) {
 				System.out.println("Something went wrong while writing search results to path: " + path);
 			}
-
 		}
 
 		/* Calculate time elapsed and output */

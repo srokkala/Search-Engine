@@ -117,16 +117,15 @@ public class InvertedIndex {
 	 * @param search  The map that updates the count
 	 * @param word    The word we are searching for
 	 */
-	private void searchHelper(ArrayList<Output> outputs, Map<String, Output> search, String word) {
+	private void searchHelper(ArrayList<SearchResult> outputs, Map<String, SearchResult> search, String word) {
 		for (String location : this.index.get(word).keySet()) {
-			if (search.containsKey(location)) {
-				search.get(location).updateCount(word);
-			} else {
-				Output output = new Output(location);
-				output.addCount(this.index.get(word).get(location).size());
+			if (!search.containsKey(location)) {
+				SearchResult output = new SearchResult(location);
 				search.put(location, output);
 				outputs.add(output);
 			}
+
+			search.get(location).updateCount(word);
 		}
 	}
 
@@ -136,9 +135,9 @@ public class InvertedIndex {
 	 * @param queries The queries used to check for a match
 	 * @return an arraylist of outputs given the input query
 	 */
-	public ArrayList<Output> queryMatchChecker(Collection<String> queries) {
-		ArrayList<Output> output = new ArrayList<>();
-		HashMap<String, Output> search = new HashMap<>();
+	public ArrayList<SearchResult> queryMatchChecker(Collection<String> queries) {
+		ArrayList<SearchResult> output = new ArrayList<>();
+		HashMap<String, SearchResult> search = new HashMap<>();
 
 		for (String queryKey : queries) {
 			if (index.containsKey(queryKey)) {
@@ -156,9 +155,9 @@ public class InvertedIndex {
 	 * @param queries The queries used to check for a partial match
 	 * @return an arraylist of outputs given the input query
 	 */
-	public ArrayList<Output> partialQueryMatchChecker(Collection<String> queries) {
-		ArrayList<Output> outputs = new ArrayList<>();
-		HashMap<String, Output> search = new HashMap<>();
+	public ArrayList<SearchResult> partialQueryMatchChecker(Collection<String> queries) {
+		ArrayList<SearchResult> outputs = new ArrayList<>();
+		HashMap<String, SearchResult> search = new HashMap<>();
 
 		for (String query : queries) {
 			for (String word : this.index.tailMap(query).keySet()) {
@@ -175,6 +174,37 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Goes through our local inverted index and adds to it
+	 * 
+	 * @param local Our local inverted index we use to optimize speed
+	 */
+
+	public void addAll(InvertedIndex local) {
+		for (String localWord : local.index.keySet()) {
+			if (this.index.containsKey(localWord) == false) {
+				this.index.put(localWord, local.index.get(localWord));
+			} else {
+				for (String localLocations : local.index.get(localWord).keySet()) {
+					if (this.index.get(localWord).containsKey(localLocations) == false) {
+						this.index.get(localWord).put(localLocations, local.index.get(localWord).get(localLocations));
+					} else {
+						this.index.get(localWord).get(localLocations)
+								.addAll(local.index.get(localWord).get(localLocations));
+					}
+				}
+			}
+		}
+		for (String localLocations : local.counts.keySet()) {
+			if (this.counts.containsKey(localLocations)) {
+				this.counts.put(localLocations,
+						Math.max(this.counts.get(localLocations), local.counts.get(localLocations)));
+			} else {
+				this.counts.put(localLocations, local.counts.get(localLocations));
+			}
+		}
+	}
+
+	/**
 	 * If the @param match is true we are return the output from matcher checker,
 	 * otherwise we return output from the partial match checker
 	 *
@@ -183,7 +213,7 @@ public class InvertedIndex {
 	 *                function to execute
 	 * @return an arraylist of outputs depending on the function called
 	 */
-	public ArrayList<Output> searchChooser(Collection<String> queries, boolean match) {
+	public ArrayList<SearchResult> searchChooser(Collection<String> queries, boolean match) {
 		if (match == true) {
 			return queryMatchChecker(queries);
 		} else {
@@ -257,7 +287,7 @@ public class InvertedIndex {
 	 * @author University of San Francisco
 	 * @version Fall 2019
 	 */
-	public class Output implements Comparable<Output> {
+	public class SearchResult implements Comparable<SearchResult> {
 
 		/**
 		 * This will hold the location of the search result.
@@ -270,66 +300,18 @@ public class InvertedIndex {
 		/**
 		 * This will hold the score of the search result.
 		 */
-		private double totals;
+		private double score;
 
 		/**
-		 * Constructor for Output class.
+		 * Constructor for SearchResult class.
 		 * 
-		 * @param place
+		 * @param place Create the SearchResult using this parameter
 		 *
 		 */
-		public Output(String place) {
+		public SearchResult(String place) {
 			this.place = place;
 			this.number = 0;
-			this.totals = 0;
-		}
-
-		/**
-		 * Sets the string Place
-		 *
-		 * @param place
-		 */
-		public void setPlace(String place) {
-			this.place = place;
-		}
-
-		/**
-		 * Sets the Number variable
-		 *
-		 * @param number
-		 */
-		public void setNumber(int number) {
-			this.number = number;
-		}
-
-		/**
-		 * Sets the total variable.
-		 * 
-		 * @param totals
-		 *
-		 */
-		public void setTotals(double totals) {
-			this.totals = totals;
-		}
-
-		/**
-		 * Sets the count data member.
-		 *
-		 * @param number New count.
-		 */
-		public void setCount(int number) {
-			this.number = number;
-			this.totals = (double) this.number / counts.get(this.place);
-		}
-
-		/**
-		 * Adds the input count to the current count of a Result instance.
-		 *
-		 * @param count The count to be added.
-		 */
-		public void addCount(int count) {
-			this.number += count;
-			this.totals = (double) this.number / counts.get(this.place);
+			this.score = 0;
 		}
 
 		/**
@@ -357,7 +339,7 @@ public class InvertedIndex {
 		 * @return the score
 		 */
 		public double getTotals() {
-			return this.totals;
+			return this.score;
 		}
 
 		/**
@@ -367,7 +349,7 @@ public class InvertedIndex {
 		 */
 		public void updateCount(String word) {
 			this.number += index.get(word).get(this.place).size();
-			this.totals = (double) this.number / counts.get(this.place);
+			this.score = (double) this.number / counts.get(this.place);
 		}
 
 		/**
@@ -388,7 +370,7 @@ public class InvertedIndex {
 		 * @return A formatted string ready to write.
 		 */
 		public String totalsOfString() {
-			return ("\"score\": " + String.format("%.8f", this.totals));
+			return ("\"score\": " + String.format("%.8f", this.score));
 		}
 
 		/**
@@ -397,13 +379,13 @@ public class InvertedIndex {
 		 * @param otherPlace
 		 * @return true if same;
 		 */
-		public boolean samePlace(Output otherPlace) {
+		public boolean samePlace(SearchResult otherPlace) {
 			return this.place.compareTo(otherPlace.place) == 0;
 		}
 
 		@Override
-		public int compareTo(Output output) {
-			double totalDiff = this.totals - output.totals;
+		public int compareTo(SearchResult output) {
+			double totalDiff = this.score - output.score;
 
 			if (totalDiff != 0) {
 				return totalDiff > 0 ? -1 : 1;

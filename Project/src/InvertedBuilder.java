@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-
 /**
  * This class helps create a new inverted index with a given path
  * 
@@ -39,11 +38,10 @@ public class InvertedBuilder {
 	/**
 	 * This method creates paths during directory traversal
 	 * 
-	 * @param path    The initial traversal point
-	 * @param threads Passing through the number of threads
+	 * @param path The initial traversal point
 	 * @throws IOException
 	 */
-	public void build(Path path, int threads) throws IOException {
+	public void build(Path path) throws IOException {
 		for (Path currentPath : getTextFiles(path)) {
 			if (isText(currentPath)) {
 				addPath(currentPath);

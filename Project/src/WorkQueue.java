@@ -14,7 +14,7 @@ public class WorkQueue {
 	/**
 	 * Keeps track of pending work
 	 */
-	public int pending;
+	private int pending;
 
 	/**
 	 * Pool of worker threads that will wait in the background until work is
@@ -66,10 +66,10 @@ public class WorkQueue {
 	 * @param r work request (in the form of a {@link Runnable} object)
 	 */
 	public void execute(Runnable r) {
+		increment();
 		synchronized (queue) {
 			queue.addLast(r);
 			queue.notifyAll();
-			increment();
 		}
 	}
 
@@ -163,10 +163,11 @@ public class WorkQueue {
 				}
 				try {
 					r.run();
-					decrement();
 				} catch (RuntimeException ex) {
 					// catch runtime exceptions to avoid leaking threads
 					System.err.println("Warning: Work queue encountered an exception while running.");
+				} finally {
+					decrement();
 				}
 			}
 		}

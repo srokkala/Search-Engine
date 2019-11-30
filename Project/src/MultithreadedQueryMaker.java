@@ -3,9 +3,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * 
@@ -16,23 +19,35 @@ import java.util.TreeMap;
  * @author University of San Francisco
  * @version Fall 2019
  */
-public class MultithreadedQueryMaker extends QueryMaker {
+public class MultithreadedQueryMaker implements QueryMakerInterface {
 
 	/**
-	 * Creating a variable using the class WorkQueue
+	 * The set that will hold cleaned up queries mapped to their results.
 	 */
-	WorkQueue workQueue;
+	private final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap;
+
+	/**
+	 * Number of Threads
+	 */
+	private final int threads;
+
+	/**
+	 * The InvertedIndex we will add to
+	 */
+	private final InvertedIndex inverted;
 
 	/**
 	 * Constructor method for QueryMaker
 	 *
 	 * @param inverted The inverted index our query search will modify
+	 * @param threads  The number of threads we will use
 	 * @throws IOException
 	 */
 
-	public MultithreadedQueryMaker(MultithreadedInvertedIndex inverted) throws IOException {
-		super(inverted);
-		new TreeMap<>();
+	public MultithreadedQueryMaker(MultithreadedInvertedIndex inverted, int threads) throws IOException {
+		this.inverted = inverted;
+		this.threads = threads;
+		this.queryMap = new TreeMap<>();
 	}
 
 	/**
@@ -42,7 +57,9 @@ public class MultithreadedQueryMaker extends QueryMaker {
 	 */
 	@Override
 	public Set<String> getQuery() {
-		return super.getQuery();
+		synchronized (queryMap) {
+			return Collections.unmodifiableSet(this.queryMap.keySet());
+		}
 	}
 
 	/**
@@ -52,7 +69,7 @@ public class MultithreadedQueryMaker extends QueryMaker {
 	 */
 	@Override
 	public String toString() {
-		return super.queryMap.toString();
+		return super.toString();
 	}
 
 	/**
@@ -62,8 +79,26 @@ public class MultithreadedQueryMaker extends QueryMaker {
 	 * @return the list of unmodifiable outputs
 	 */
 	@Override
-	public List<InvertedIndex.Output> getOutput(String line) {
-		return super.getOutput(line);
+	public List<InvertedIndex.SearchResult> getOutput(String line) {
+		synchronized (queryMap) {
+			if (this.queryMap.get(line) != null) {
+				return Collections.unmodifiableList(this.queryMap.get(line));
+			} else {
+				return Collections.emptyList();
+			}
+		}
+	}
+
+	/**
+	 * Calls the Function in SimpleJsonWriter to write the queries
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	public void queryWriter(Path path) throws IOException {
+		synchronized (queryMap) {
+			SimpleJsonWriter.asQuery(this.queryMap, path);
+		}
 	}
 
 	/**
@@ -73,7 +108,11 @@ public class MultithreadedQueryMaker extends QueryMaker {
 	 */
 	@Override
 	public boolean isEmpty() {
-		return super.isEmpty();
+		boolean emptyCheck = this.queryMap.keySet().size() == 0;
+		synchronized (queryMap) {
+			return emptyCheck;
+		}
+
 	}
 
 	/**
@@ -84,20 +123,37 @@ public class MultithreadedQueryMaker extends QueryMaker {
 	 */
 	@Override
 	public void queryLineParser(String line, boolean match) {
-		super.queryLineParser(line, match);
+		TreeSet<String> queries = TextFileStemmer.uniqueStems(line);
+
+		if (queries.isEmpty()) {
+			return;
+		}
+
+		String joined = String.join(" ", queries);
+		synchronized (queryMap) {
+			if (queryMap.containsKey(joined)) {
+				return;
+			}
+
+		}
+
+		ArrayList<InvertedIndex.SearchResult> local = inverted.searchChooser(queries, match);
+		synchronized (queryMap) {
+			this.queryMap.put(joined, local);
+		}
+
 	}
 
 	/**
 	 * This function overrides the querymaker function to be thread safe
 	 * 
-	 * @param path    The path of the query file
-	 * @param threads Passing through the number of threads
-	 * @param match   Return a boolean if we are looking for an exact match or not
+	 * @param path  The path of the query file
+	 * @param match Return a boolean if we are looking for an exact match or not
 	 */
 
 	@Override
-	public void queryParser(Path path, int threads, boolean match) throws IOException {
-		this.workQueue = new WorkQueue(threads);
+	public void queryParser(Path path, boolean match) throws IOException {
+		WorkQueue workQueue = new WorkQueue(this.threads);
 		try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);) {
 			String query;
 			while ((query = reader.readLine()) != null) {
@@ -141,9 +197,7 @@ public class MultithreadedQueryMaker extends QueryMaker {
 
 		@Override
 		public void run() {
-			synchronized (workQueue) {
-				queryLineParser(line, match);
-			}
+			queryLineParser(line, match);
 		}
 	}
 

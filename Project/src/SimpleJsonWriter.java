@@ -348,7 +348,8 @@ public class SimpleJsonWriter {
 	 * @param path
 	 * @throws IOException
 	 */
-	public static void asQuery(Map<String, ArrayList<InvertedIndex.Output>> querySet, Path path) throws IOException {
+	public static void asQuery(Map<String, ArrayList<InvertedIndex.SearchResult>> querySet, Path path)
+			throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asQuery(querySet, path, writer, 0);
 		}
@@ -360,12 +361,12 @@ public class SimpleJsonWriter {
 	 * @param queryMap
 	 * @return Map
 	 */
-	public static Map<String, ArrayList<InvertedIndex.Output>> asQueryHelper(
-			Map<String, ArrayList<InvertedIndex.Output>> queryMap) {
-		Map<String, ArrayList<InvertedIndex.Output>> initialMap = new TreeMap<>();
+	public static Map<String, ArrayList<InvertedIndex.SearchResult>> asQueryHelper(
+			Map<String, ArrayList<InvertedIndex.SearchResult>> queryMap) {
+		Map<String, ArrayList<InvertedIndex.SearchResult>> initialMap = new TreeMap<>();
 
 		for (String query : queryMap.keySet()) {
-			ArrayList<InvertedIndex.Output> innerTemp = new ArrayList<>();
+			ArrayList<InvertedIndex.SearchResult> innerTemp = new ArrayList<>();
 			innerTemp.addAll(queryMap.get(query));
 			initialMap.put(query, innerTemp);
 		}
@@ -383,7 +384,7 @@ public class SimpleJsonWriter {
 	 * @param level    the Initial Indent Level
 	 * @throws IOException
 	 */
-	public static void asQuery(Map<String, ArrayList<InvertedIndex.Output>> queryMap, Path path, Writer writer,
+	public static void asQuery(Map<String, ArrayList<InvertedIndex.SearchResult>> queryMap, Path path, Writer writer,
 			int level) throws IOException {
 
 		writer.write("{\n");
