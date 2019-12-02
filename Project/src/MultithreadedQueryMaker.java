@@ -34,7 +34,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 	/**
 	 * The InvertedIndex we will add to
 	 */
-	private final InvertedIndex inverted;
+	private final InvertedIndex inverted; // TODO MultithreadedInvertedIndex
 
 	/**
 	 * Constructor method for QueryMaker
@@ -44,7 +44,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 	 * @throws IOException
 	 */
 
-	public MultithreadedQueryMaker(MultithreadedInvertedIndex inverted, int threads) throws IOException {
+	public MultithreadedQueryMaker(MultithreadedInvertedIndex inverted, int threads) throws IOException { // TODO Remove throws IOException
 		this.inverted = inverted;
 		this.threads = threads;
 		this.queryMap = new TreeMap<>();
@@ -69,6 +69,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 	 */
 	@Override
 	public String toString() {
+		// TODO synchronized and then do something more useful... queryMap.toString
 		return super.toString();
 	}
 
@@ -108,7 +109,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 	 */
 	@Override
 	public boolean isEmpty() {
-		boolean emptyCheck = this.queryMap.keySet().size() == 0;
+		boolean emptyCheck = this.queryMap.keySet().size() == 0; // TODO Move inside of synchronized block
 		synchronized (queryMap) {
 			return emptyCheck;
 		}
@@ -163,7 +164,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 		try {
 			workQueue.finish();
 		} catch (Exception e) {
-
+			// TODO Do something
 		}
 		workQueue.shutdown();
 	}

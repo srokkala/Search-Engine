@@ -21,7 +21,7 @@ public class Driver {
 	 * @throws IOException
 	 *
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
 		/* Store initial start time */
 
 		// initial thread count
