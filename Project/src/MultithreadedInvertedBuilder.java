@@ -43,7 +43,7 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	public void build(Path path) throws IOException {
 		WorkQueue queue = new WorkQueue(threads);
 		for (Path currentPath : getTextFiles(path)) {
-			if (isText(currentPath)) {
+			if (isText(currentPath)) { // TODO Remove
 				queue.execute(new BuildHelper(currentPath));
 
 			}
@@ -95,7 +95,7 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 				inverted.addAll(local);
 
 			} catch (IOException e) {
-				System.out.println("Warni;ng: Adding To Inverted Index Failed");
+				System.out.println("Warning: Adding To Inverted Index Failed");
 			}
 
 		}
