@@ -43,10 +43,8 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	public void build(Path path) throws IOException {
 		WorkQueue queue = new WorkQueue(threads);
 		for (Path currentPath : getTextFiles(path)) {
-			if (isText(currentPath)) { // TODO Remove
 				queue.execute(new BuildHelper(currentPath));
 
-			}
 		}
 		try {
 			queue.finish();

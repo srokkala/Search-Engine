@@ -43,11 +43,9 @@ public class InvertedBuilder {
 	 */
 	public void build(Path path) throws IOException {
 		for (Path currentPath : getTextFiles(path)) {
-			if (isText(currentPath)) { // TODO Remove
 				addPath(currentPath);
 			}
 		}
-	}
 
 	/**
 	 * This method gets a list of all subfiles from a file
@@ -57,8 +55,7 @@ public class InvertedBuilder {
 	 * @throws IOException
 	 */
 	public static List<Path> getTextFiles(Path path) throws IOException {
-		List<Path> list = Files.walk(path, FileVisitOption.FOLLOW_LINKS).collect(Collectors.toList());
-		// TODO List<Path> list = Files.walk(path, FileVisitOption.FOLLOW_LINKS).filter(InvertedBuilder::isText).collect(Collectors.toList());
+		List<Path> list = Files.walk(path, FileVisitOption.FOLLOW_LINKS).filter(InvertedBuilder::isText).collect(Collectors.toList());
 		return list;
 	}
 

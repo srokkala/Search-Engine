@@ -18,10 +18,9 @@ public class Driver {
 	 * inverted index.
 	 *
 	 * @param args flag/value pairs used to start this program
-	 * @throws IOException
 	 *
 	 */
-	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
+	public static void main(String[] args){
 		/* Store initial start time */
 
 		// initial thread count
