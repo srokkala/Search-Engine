@@ -119,9 +119,9 @@ public class SearchServlet extends HttpServlet {
 		out.printf("	<section class=\"section\">%n");
 		out.printf("		<div class=\"container\">%n");
 		out.printf("%n");
-		out.printf("<input type = \"checkbox\" name = \"exact\" id = \"exact\" > Exact");
-		out.printf("%n");
 		out.printf("			<form method=\"%s\" action=\"%s\">%n", "POST", request.getServletPath());
+		out.printf("<input type = \"checkbox\" name = \"exact\" id = \"exact\" > Exact");
+		out.printf("%n");		
 		out.printf("				<div class=\"field\">%n");
 		out.printf("					<div class=\"control has-icons-left\">%n");
 		out.printf(
@@ -254,11 +254,14 @@ public class SearchServlet extends HttpServlet {
 		} else {
 			exact = false;
 		}
+		
+		System.out.println("Exact search: " + exact + ", checkBox: " + checkBox);
 
 		String formatString = null;
 
 		SnowballStemmer stemmer = new SnowballStemmer(DEFAULT);
 		
+		queryList.clear(); // TODO Sophie
 		for (String part : message.split(" ")) {
 			if (part == " ") {
 				part = "";
