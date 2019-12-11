@@ -283,8 +283,8 @@ public class SearchServlet extends HttpServlet {
 			outputQueue.clear();
 			for (MultithreadedInvertedIndex.SearchResult result : results) {
 				formatString = String.format(
-						"<a href=\"%s\">%s</a>" + "<p class=\"has-text-grey is-size-7 has-text-right\">%s</p>%n",
-						result.getPlace(), result.getPlace(), getDate());
+						"<a href=\"%s\">%s</a>" + "<p class=\"has-text-grey is-size-7 has-text-right\">%s, %s , %s </p>%n",
+						result.getPlace(), result.getPlace(), getDate(),result.totalsOfString(), result.countOfString());
 				searchResults++;
 				outputQueue.add(formatString);
 			}
