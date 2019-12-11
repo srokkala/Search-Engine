@@ -9,7 +9,7 @@ import java.util.Set;
  * This is the multithreaded version of the invertedindex class All functions
  * are overridden and thread safe
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */

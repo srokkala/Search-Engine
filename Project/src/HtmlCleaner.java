@@ -10,6 +10,10 @@ import java.util.regex.Pattern;
 
 /**
  * Cleans simple, validating HTML 4/5 into plain text.
+ * 
+ * @author Steven Rokkala
+ * @author University of San Francisco
+ * @version Fall 2019
  */
 public class HtmlCleaner {
 
