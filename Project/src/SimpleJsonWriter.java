@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Warning: This class is not thread-safe. If multiple threads access this class
  * concurrently, access must be synchronized externally.
  * 
- * @author CS 212 Software Development
+*  @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */

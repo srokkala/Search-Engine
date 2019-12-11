@@ -5,11 +5,19 @@ import java.time.Duration;
 import java.time.Instant;
 
 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+
+
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
  *
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */
@@ -19,7 +27,7 @@ public class Driver {
 	 * arguments. This includes (but is not limited to) how to build or search an
 	 * inverted index.
 	 *
-	 * @param args flag/value pairs used to start this program
+	 * @param args flag/value pairs used to start this program 
 	 *
 	 */
 	public static void main(String[] args){
@@ -39,8 +47,10 @@ public class Driver {
 		QueryMakerInterface maker;
 		
 		WebCrawler crawler;
+		
+		SearchServlet servlet;
 
-		if (argumentParser.hasFlag("-threads") || argumentParser.hasFlag("-url")) {
+		if (argumentParser.hasFlag("-threads") || argumentParser.hasFlag("-url") || argumentParser.hasFlag("-port")) {
 			try {
 				threads = Integer.parseInt(argumentParser.getString("-threads"));
 				if (threads == 0) {
@@ -73,6 +83,47 @@ public class Driver {
 					System.out.println("Error occured creating the URL");
 				}
 			}
+			
+			if(argumentParser.hasFlag("-port"))
+			{
+				servlet = new SearchServlet(maker, threadSafe, crawler);
+				int port;
+				try {
+					port = Integer.parseInt(argumentParser.getString("-port"));
+					System.out.println(port);
+				}
+				catch(Exception e) {
+					System.out.println("Error Occured While Getting String");
+					port = 8080;
+				}
+				
+				try {
+					ServletContextHandler servletContextHandler = null;
+
+					servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+					servletContextHandler.setContextPath("/");
+
+					DefaultHandler defaultHandler = new DefaultHandler();
+					defaultHandler.setServeIcon(true);
+
+					ContextHandler contextHandler = new ContextHandler("/favicon.ico");
+					contextHandler.setHandler(defaultHandler);
+
+					ServletHolder servletHolder = new ServletHolder(servlet);
+
+					ServletHandler servletHandler = new ServletHandler();
+					servletHandler.addServletWithMapping(servletHolder, "/");
+
+					Server server = new Server(port);
+					server.setHandler(servletHandler);
+					server.start();
+					server.join();
+
+				} catch (Exception e) {
+					System.err.println("Jetty server Did not work");
+				}
+			}
+			
 		} 
 		
 		else {

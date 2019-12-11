@@ -24,7 +24,7 @@ public class MultithreadedQueryMaker implements QueryMakerInterface {
 	/**
 	 * The set that will hold cleaned up queries mapped to their results.
 	 */
-	private final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap;
+	final TreeMap<String, ArrayList<InvertedIndex.SearchResult>> queryMap;
 
 	/**
 	 * Number of Threads

@@ -12,7 +12,7 @@ import java.util.TreeSet;
  * This class build queries using the inverted index passed in through the
  * constructor
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */

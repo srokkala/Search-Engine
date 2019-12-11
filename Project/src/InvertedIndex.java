@@ -12,7 +12,7 @@ import java.util.Collection;
 /**
  * The invertedIndex class adds an element to the inverted index
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */
@@ -283,7 +283,7 @@ public class InvertedIndex {
 	/**
 	 * The class that keeps track of the output of a search
 	 * 
-	 * @author CS 212 Software Development
+	 * @author Steven Rokkala
 	 * @author University of San Francisco
 	 * @version Fall 2019
 	 */

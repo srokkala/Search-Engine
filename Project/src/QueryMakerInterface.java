@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Interface used by @class MultithreadedQueryMaker and @class QueryMaker
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */

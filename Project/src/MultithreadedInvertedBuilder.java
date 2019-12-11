@@ -3,7 +3,7 @@ import java.nio.file.Path;
 
 /**
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */
@@ -58,9 +58,9 @@ public class MultithreadedInvertedBuilder extends InvertedBuilder {
 	 * This function is used to add the path of the inverted index and overrides the
 	 * run function from the @interface Runnable
 	 * 
-	 * @author CS 212 Software Development
-	 * @author University of San Francisco
-	 * @version Fall 2019
+	* @author Steven Rokkala
+	* @author University of San Francisco
+	* @version Fall 2019
 	 */
 	private class BuildHelper implements Runnable {
 

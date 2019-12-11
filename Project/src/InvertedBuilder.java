@@ -12,7 +12,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 /**
  * This class helps create a new inverted index with a given path
  * 
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */

@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * Parses and stores command-line arguments into simple key = value pairs.
  *
- * @author CS 212 Software Development
+ * @author Steven Rokkala
  * @author University of San Francisco
  * @version Fall 2019
  */
