@@ -43,7 +43,7 @@ public class HtmlFetcher {
 		int statusCode = -1;
 		Pattern pattern = Pattern.compile("\\s(\\d+?)\\s");
 		Matcher match = pattern.matcher(headers.get(null).get(0));
-		System.out.println(headers.get(null).get(0));
+		// System.out.println(headers.get(null).get(0));
 		// System.out.println(match.group(1));
 		if (match.find()) {
 			statusCode = Integer.parseInt(match.group(1));
@@ -93,7 +93,7 @@ public class HtmlFetcher {
 	 */
 	public static String fetch(URL url, int redirects) {
 		Map<String, List<String>> map = new HashMap<>();
-		System.out.println(redirects);
+		// TODO Removed System.out.println(redirects);
 		try {
 			map = HttpsFetcher.fetch(url);
 			if (isHtml(map)) {

@@ -363,14 +363,14 @@ public class InvertedIndex {
 		 * @return A formatted string ready to write.
 		 */
 		public String countOfString() {
-			return ("\"Matches\": " + this.number);
+			return ("\"count\": " + this.number + ","); // TODO Changed by Sophie
 		}
 
 		/**
 		 * @return A formatted string ready to write.
 		 */
 		public String totalsOfString() {
-			return ("\"Search Score\": " + String.format("%.8f", this.score));
+			return ("\"score\": " + String.format("%.8f", this.score)); // TODO Change by Sophie
 		}
 
 		/**

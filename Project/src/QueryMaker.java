@@ -56,7 +56,7 @@ public class QueryMaker implements QueryMakerInterface {
 	 * @return the list of unmodifiable outputs
 	 */
 	public List<InvertedIndex.SearchResult> getOutput(String line) {
-		if (this.queryMap.get(line) == null) {
+		if (this.queryMap.get(line) != null) { // TODO Changed by Sophie
 			return Collections.unmodifiableList(this.queryMap.get(line));
 		} else
 			return Collections.emptyList();
